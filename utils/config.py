@@ -31,6 +31,7 @@ settings = {
         # Supress banner, interactive mode
         'cmd'   : ['gdb', '-interpreter=mi', '-quiet',],
         'attach': '--pid={pid}',
+        'prompt': '(gdb)'
     },
 }
 
@@ -84,11 +85,11 @@ remotes = {
         #'node_list'     : "checkjob {jobid} | grep -o '\w\+:[0-9]\+\]' | sed 's/:[0-9]*\]//'",
         'node_ls'         : "checkjob {jobid}",
         'node_ls_fn'      : lambda x: re.findall('\[(\w+):\d+\]', x),
-        'app_name'        : '''ps -o pid:1,cmd:1 -e | grep -o "MPISPAWN_ARGV_[0-9]='.\+'"''',
+        'app_name'        : '''ssh {host} "ps -o pid:1,cmd:1 -e" | grep -o "MPISPAWN_ARGV_[0-9]='.\+'"''',
         'app_name_fn'     : lambda x: re.findall('MPISPAWN_ARGV_0=([\S]+)', x)[0].replace('"','').replace("'",''),
         #'pid_ls'          : 'ps -o pid:1,cmd:1 -e | grep {appname}',
-        'pid_ls'          : 'pgrep {appname}',
-        'pid_ls_fn'       : lambda x: x.split(),
+        'pid_ls'          : 'ssh {host} "pgrep {appname}"',
+        'pid_ls_fn'       : lambda x: [int(y) for y in x.split()],
     },
     'rostam':
     {

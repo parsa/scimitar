@@ -5,8 +5,9 @@
 #  Distributed under the Boost Software License, Version 1.0. (See accompanying
 #  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-from . import modes
-from . import manager as _manager
+from . import modes, local_session as _local_s, remote_session as _remote_s
+from .exceptions import *
+from utils import config
 #######################
 # mode: offline
 #######################
@@ -19,18 +20,19 @@ def local(args):
         pids = []
         for arg in args:
             pids.append(int(arg))
-        _manager.start_local(pids)
+        _local_s.start_local(pids)
         return (modes.to_local, None)
     except TypeError:
         return (modes.offline, 'Was expecting PIDs, received a non-integer')
-    raise _manager.CommandImplementationIncomplete
+    _local_s.launch(pids)
+    raise CommandImplementationIncomplete
     #return (modes.offline, None)
     
 def remote(args):
     if len(args) != 2:
-        raise _manager.BadArgsException('remote', 'remote <login_node_hostname> <jobid>')
-    _manager.start_remote(args[0], args[1])
-    return (modes.offline, None)
+        raise BadArgsException('remote', 'remote <login_node_hostname> <jobid>')
+    _remote_s.launch(host=args[0], jobid=args[1])
+    return (modes.remote, None)
     
 def quit(args):
     return (modes.quit, None)
@@ -44,5 +46,5 @@ commands = {
 def process(cmd, args):
     if cmd in commands:
         return commands[cmd](args)
-    raise _manager.UnknownCommandException(cmd)
+    raise UnknownCommandException(cmd)
 
