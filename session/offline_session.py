@@ -7,7 +7,7 @@
 
 from . import modes, local_session as _local_s, remote_session as _remote_s
 from .exceptions import *
-from utils import config
+from utils import config, print_ahead
 #######################
 # mode: offline
 #######################
@@ -30,8 +30,9 @@ def local(args):
     
 def remote(args):
     if len(args) != 2:
-        raise BadArgsException('remote', 'remote <login_node_hostname> <jobid>')
-    _remote_s.launch(host=args[0], jobid=args[1])
+        raise BadArgsError('remote', 'remote <login_node_hostname> <jobid>')
+    #print_ahead('Launching remote session')
+    _remote_s.launch(name=args[0], jobid=args[1])
     return (modes.remote, None)
     
 def quit(args):
@@ -46,5 +47,5 @@ commands = {
 def process(cmd, args):
     if cmd in commands:
         return commands[cmd](args)
-    raise UnknownCommandException(cmd)
+    raise UnknownCommandError(cmd)
 

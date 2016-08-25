@@ -14,18 +14,22 @@ import readline
 import re
 import select
 
-def print_ahead(expr, prompt=''):
+FORMATTING_CONSTS = {'uon': vt100.underline_on, 'uoff': vt100.underline_off}
+
+def print_out(expr, *args, **kwargs):
+    stdout.write(expr.format(*args, **{**kwargs, **FORMATTING_CONSTS}) + '\n')
+    stdout.flush()
+
+def print_error(expr, *args, **kwargs):
+    print_out(vt100.format.fg_red + expr + vt100.format._clear_all_chars_attrs, *args, **kwargs)
+
+def print_ahead(expr, prompt='', *args, **kwargs):
     current_input = readline.get_line_buffer()
     vt100.edit.erase_line()
     stdout.write('\r')
 
-    print(expr)
-    stdout.write(prompt + current_input)
-    stdout.flush()
-
-def print_out(expr):
-    stdout.write(expr + '\n')
-    stdout.flush()
+    print(expr, *args, **kwargs)
+    print_out(prompt + current_input)
 
 class AlarmException(Exception):
     pass

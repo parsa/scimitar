@@ -11,11 +11,15 @@ _clear_all_chars_attrs           = '\033[0m'
 def clear_all_chars_attrs():
     o.write(_clear_all_chars_attrs)
 
-bright                          = '\033[1m'
+alternate_intesity_on           = '\033[1m'
+alternate_intesity_off          = '\033[22m'
 dim                             = '\033[2m'
-underline                       = '\033[4m'
-blink                           = '\033[5m'
-inv_video                       = '\033[7m'
+underline_on                    = '\033[4m'
+underline_off                   = '\033[24m'
+blink_on                        = '\033[5m'
+blink_off                       = '\033[25m'
+inv_video_on                    = '\033[7m'
+inv_video_off                   = '\033[27m'
 hidden                          = '\033[8m'
 
 fg_black                        = '\033[30m'

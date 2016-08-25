@@ -41,7 +41,7 @@ remotes = {
         # MERGE: dotsshconfig (a6206aa120844233b986cb470013cf54)
         #'use_dotsshconfig': True,
         # NOTE: I have smic in my .ssh/config. Won't work elsewhere as is
-        'hostname'        : 'smic',
+        'login_node'      : 'smic',
         # FIXME: Find a way usernames can be provided with more ease
         'user'            : getpass.getuser(),
         'PS1'             : '[\$\#] ',
@@ -83,12 +83,12 @@ remotes = {
         ## Reservation '164018' (-00:00:20 -> 00:59:40  Duration: 1:00:00)
         ## 
         #'node_list'     : "checkjob {jobid} | grep -o '\w\+:[0-9]\+\]' | sed 's/:[0-9]*\]//'",
-        'node_ls'         : "checkjob {jobid}",
+        'node_ls_cmd'     : "checkjob {jobid}",
         'node_ls_fn'      : lambda x: re.findall('\[(\w+):\d+\]', x),
-        'app_name'        : '''ssh {host} "ps -o pid:1,cmd:1 -e" | grep -o "MPISPAWN_ARGV_[0-9]='.\+'"''',
+        'app_name_cmd'    : '''ssh {host} "ps -o pid:1,cmd:1 -e" | grep -o "MPISPAWN_ARGV_[0-9]='.\+'"''',
         'app_name_fn'     : lambda x: re.findall('MPISPAWN_ARGV_0=([\S]+)', x)[0].replace('"','').replace("'",''),
         #'pid_ls'          : 'ps -o pid:1,cmd:1 -e | grep {appname}',
-        'pid_ls'          : 'ssh {host} "pgrep {appname}"',
+        'pid_ls_cmd'      : 'ssh {host} "pgrep {appname}"',
         'pid_ls_fn'       : lambda x: [int(y) for y in x.split()],
     },
     'rostam':
@@ -96,13 +96,17 @@ remotes = {
         # MERGE: dotsshconfig (a6206aa120844233b986cb470013cf54)
         #'use_dotsshconfig': True,
         # NOTE: I have rostam in my .ssh/config. Won't work elsewhere as is
-        'hostname'        : 'rostam',
+        'login_node'      : 'rostam',
         # HACK: I hardcoded my username. Not good
         'user'            : 'pamini',
         'PS1'             : '[\$\#] ',
         # FIXME: add rostam's config once SLURM starts working again
-        'node_list'       : None,
-        'nodels_fn'       : None,
+        'node_ls_cmd'     : None,
+        'node_ls_fn'      : None,
+        'app_name_cmd'    : None,
+        'app_name_fn'     : None,
+        'pid_ls_cmd'      : None,
+        'pid_ls_fn'       : None,
     },
     # MERGE: stampede_config (3c21aec9daba4bc49fd2d0d98ec0e46b)
     # MERGE: edison_config (613a076ab3254014b55f645a7d85e529)
