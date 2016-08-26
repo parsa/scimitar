@@ -33,8 +33,6 @@ and add to it to meet your needs.
 * AsyncIO
   * MERGE: asyncio_processing_loop (939bad3d2718407e8b07176c14839ba0)
   * MERGE: live_output (b09de9acc7ad476fb09ce2dd4bd1ad69)
-* Python 2 Support
-  * MERGE: python2 (38e8ba149e72407bbab55ed21a39a599)
 * UI
   * MERGE: ui_wxwidgets (f49ea035cbc845099ac8356d9147dfb0)
   * MERGE: ui_curses (c68045350edc449a90b1dbc4ddbeeb08)
