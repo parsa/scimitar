@@ -62,7 +62,7 @@ class RemoteSession():
     def query(self, line):
         self.active_terminal.sendline(line)
         self.active_terminal.prompt()
-        return str(self.active_terminal.before, 'ascii')
+        return self.active_terminal.before
 
 
     class JobExaminer:
@@ -137,7 +137,7 @@ class RemoteSession():
         def query(self, msg):
             self.conn.sendline(msg)
             self.conn.prompt()
-            return str(self.conn.before, 'ascii')
+            return self.conn.before
 
         def verify_command_success(self, fail_msg, error_msg, **kwargs):
             # Check if the listing command was successful.

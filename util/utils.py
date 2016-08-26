@@ -14,11 +14,12 @@ import signal
 import readline
 import re
 import select
+from itertools import chain
 
 FORMATTING_CONSTS = {'u1': vt100.format._underline_on, 'u0': vt100.format._underline_off}
 
-def print_out(expr, *args, ending='\n', **kwargs):
-    stdout.write(expr.format(*args, **{**kwargs, **FORMATTING_CONSTS}) + ending)
+def print_out(expr, ending='\n', *args, **kwargs):
+    stdout.write(expr.format(*args, **dict(chain(kwargs.items(), FORMATTING_CONSTS.items()))) + ending)
     stdout.flush()
 
 def print_error(expr, *args, **kwargs):
@@ -75,10 +76,10 @@ def repr_str(string):
     
 
 def stream_readline(stream):
-    return str(stream.readline(), 'ascii')
+    return stream.readline()
 
 def stream_writeline(msg, stream):
-    stream.write(bytes(msg, 'ascii'))
+    stream.write(msg)
     stream.flush()
     
 def attempt_read(stream, retries=-1, timeout=-1, pattern=None):
@@ -121,7 +122,7 @@ def raw_input_async(prompt='', timeout=5):
     #signal.alarm(timeout)
 
     try:
-        text = input(prompt)
+        text = raw_input(prompt)
         text_parts = text.split()
         #signal.alarm(0)
         return text_parts, None

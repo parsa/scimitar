@@ -16,7 +16,7 @@
 import signal
 from sys import stdout
 import time
-import _thread
+import thread
 import threading
 from util import config, vt100, print_out, print_ahead, print_error, raw_input_async, repr_str
 import session
@@ -80,7 +80,7 @@ def main():
     state = session.modes.offline
 
     # Async output printing
-    _thread.start_new_thread(noise, ())
+    thread.start_new_thread(noise, ())
 
     # Main loop
     while state != session.modes.quit:
@@ -92,11 +92,12 @@ def main():
         # HACK: Temporarily disabled for debugging
         #vt100.lock_keyboard()
         ## HACK: Display the user's input
-        #print_out(str(user_input.encode('unicode_escape'), 'ascii') if user_input else '')
+        #print_out(user_input.encode('string_escape') if user_input else '')
 
         # An empty string is a valid empty
         # If the input was a control signal split might just remove it
-        cmd, *args = user_input if user_input else key_seq
+        packed_input = user_input if user_input else key_seq
+        cmd, args = packed_input[0], packed_input[1:]
         # Run the appropriate mode's processing function
         cmd_processor_fn = command_switcher.get(state)
 
