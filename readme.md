@@ -3,7 +3,7 @@
 
 ### Prerequisites
 * Software:
-  * Python 3 (Python 2 support pending)
+  * Python 2.7
   * GDB
 * Python Modules
   * pexpect

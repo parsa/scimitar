@@ -1,9 +1,16 @@
-# Copyright (c) 2016 Parsa Amini
-# Copyright (c) 2016 Hartmut Kaiser
-# Copyright (c) 2016 Thomas Heller
-#
-#  Distributed under the Boost Software License, Version 1.0. (See accompanying
-#  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+# coding: utf-8
+'''
+    Scimitar: Ye Distributed Debugger
+    ~~~~~~~~
+    :copyright:
+    Copyright (c) 2016 Parsa Amini
+    Copyright (c) 2016 Hartmut Kaiser
+    Copyright (c) 2016 Thomas Heller
+
+    :license:
+    Distributed under the Boost Software License, Version 1.0. (See accompanying
+    file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+'''
 
 from . import vt100
 from . import config
@@ -140,7 +147,7 @@ def raw_input_async(prompt='', timeout=5):
             if (time.now() - raw_input_async.last_kill_sig).seconds < config.settings['signals']['sigkill_last']:
                 # The user is frantically sending <C-c>s
                 if raw_input_async.kill_sigs >= config.settings['signals']['sigkill'] - 1:
-                    print('Got <C-c>. ABAAAAAAANDON SHIP!',)
+                    print_out('Got {u1}<C-c>{u0}. ABAAAAAAANDON SHIP!')
                     exit(0)
             else:
                 raw_input_async.kill_sigs = 0
