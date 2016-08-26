@@ -1,0 +1,27 @@
+# Copyright (c) 2016 Parsa Amini
+# Copyright (c) 2016 Hartmut Kaiser
+# Copyright (c) 2016 Thomas Heller
+#
+#  Distributed under the Boost Software License, Version 1.0. (See accompanying
+#  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+
+from .exceptions import *
+
+class AlarmSignal(ScimitarError):
+    pass
+
+def __alarm_handler(signum, frame):
+    raise AlarmSignal
+
+class StopSignal(ScimitarError):
+    pass
+
+def __stop_handler(signum, frame):
+    raise StopSignal
+
+class QuitSignal(ScimitarError):
+    pass
+
+def __quit_handler(signum, frame):
+    raise QuitSignal
+

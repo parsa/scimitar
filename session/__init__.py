@@ -11,4 +11,5 @@ from .exceptions import *
 from . import offline_session as offline
 from . import local_session as local
 from . import remote_session as remote
+from . import debugging_session as debugging
 

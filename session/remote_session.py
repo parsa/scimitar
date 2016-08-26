@@ -7,8 +7,7 @@
 
 from .exceptions import *
 from . import modes
-from utils import configuration
-#from utils import config
+from util import configuration, print_ahead
 import pexpect.pxssh as sp
 ##############################
 # mode: remote
@@ -16,11 +15,11 @@ import pexpect.pxssh as sp
 
 global session
 
-
 # FIXME: RemoteSession should live in a different thread. Whenever connection
 # dies or is closed session mode should change instantly. Exceptions must be
 # handled properly, too
 
+# TODO: Move this. GDB commands should be processed inside debugging_session
 # TODO: If response didn't come by after a certain timeout passes return pending
 def process(cmd, args):
     """Sends a query and retrieves the response"""
@@ -87,20 +86,18 @@ class RemoteSession():
             node_ls_cmd = self.cfg.node_ls_cmd.format(jobid=jobid)
             node_ls_raw = self.query(node_ls_cmd)
             # Check if the command actually succeeded
-            self.verify_command_success(
-'''Cannot list nodes in job {jobid}. Listing failed with
-exit status code {status_code}. Make sure Job ID {jobid}
-is correct and the job has started''',
-                'Got an unexpected response from the listing command. '
-                'Cannot proceed',
+            self.verify_command_success('''
+    Cannot list nodes in job {jobid}. Listing failed with exit status code {status_code}.
+    Make sure Job ID {jobid} is correct and the job has started''', '''
+    Got an unexpected response from the listing command. Cannot proceed''',
                 jobid=jobid)
             # Process the result and get the hostnames
             # TODO: Handle potential exceptions when the text was messed up.
             # TODO: Handle potential exceptions when the function messes up.
             nodes = self.cfg.node_ls_fn(node_ls_raw)
             if type(nodes) is not list:
-                raise CommandFailedError('examine_job',
-                    'Processing function did not return a list')
+                raise CommandFailedError('examine_job', '''
+    Processing function did not return a list''')
             return nodes
 
         def try_find_running_app(self, node_0):
@@ -109,11 +106,11 @@ is correct and the job has started''',
             app_name_cmd = self.cfg.app_name_cmd.format(host=node_0)
             app_name_raw = self.query(app_name_cmd)
             # Check if the command actually succeeded
-            self.verify_command_success(
-                'Cannot retrieve running application\'s name. Please make sure '
-                'the app is running',
-                'Got an unexpected response while trying to retrieve running '
-                'application\' name. Cannot proceed ')
+            self.verify_command_success( '''
+    Cannot retrieve running application's name. Please make sure the app is
+    running''', '''
+    Got an unexpected response while trying to retrieve running application'
+    name. Cannot proceed''')
             if not app_name_raw:
                 raise NoRunningAppFoundError
             return self.cfg.app_name_fn(app_name_raw)
@@ -131,8 +128,8 @@ is correct and the job has started''',
                 pids = self.cfg.pid_ls_fn(pids_raw)
                 # See if it actually is a list or not
                 if type(pids) is not list:
-                    raise CommandFailedError('list_pids',
-                        'Processing function did not return a list')
+                    raise CommandFailedError('list_pids', '''
+    Processing function did not return a list''')
                 # Add to the dictionary
                 job[node] = pids
             return job
@@ -162,15 +159,21 @@ is correct and the job has started''',
         application name, b) list of nodes, and c) a dictionary of PIDs'''
         try:
             # SSH to the head node.
+            print_ahead('Connecting to {host}...', host=self.config.login_node)
             with RemoteSession.JobExaminer(self.config) as examiner:
                 # Retrieve list of nodes
                 self.nodes = examiner.try_list_nodes(self.jobid)
+                print_ahead('Nodes in job {u1}{jobid}{u0}: {u1}{nodes}{u0}',
+                    jobid=self.jobid, nodes=' '.join(self.nodes))
                 # Retrieve application name
                 self.app_name = examiner.try_find_running_app(self.nodes[0])
+                print_ahead('Application name: {u1}{app_name}{u0}',
+                    app_name=self.app_name)
                 app_short_name = self.app_name.split('/')[-1]
 
                 # Retrieve the PIDs
                 self.job = examiner.try_list_pids(self.nodes, app_short_name)
+                print_ahead('PIDs:\n{0}', repr(self.job))
 
         # Broken pipe
         except sp.ExceptionPxssh as e:
@@ -183,7 +186,6 @@ is correct and the job has started''',
         for node, pids in self.job.items():
             for pid in pids:
                 try:
-                    print('+++Connecting+++')
                     conn = sp.pxssh(echo=False)
                     conn.login(self.config.login_node, self.config.user, self.config.PS1)
 
@@ -193,11 +195,8 @@ is correct and the job has started''',
                     cmd.extend(gdb_cmd)
                     gdb_str = ' '.join(cmd)
 
-                    conn.PROMPT = '\(gdb\)'
+                    conn.PROMPT = gdb_config['mi_prompt_pattern']
                     conn.sendline(gdb_str)
-
-                    print('+++Connected+++')
-                    import pdb; pdb.set_trace()
 
                     self.remote_terminals.append(conn)
 

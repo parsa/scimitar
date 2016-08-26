@@ -1,17 +1,24 @@
-#!/usr/bin/env python3
-# Copyright (c) 2016 Parsa Amini
-# Copyright (c) 2016 Hartmut Kaiser
-# Copyright (c) 2016 Thomas Heller
-#
-#  Distributed under the Boost Software License, Version 1.0. (See accompanying
-#  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+#!/usr/bin/env python
+# coding: utf-8
+'''
+    Scimitar: Ye Distributed Debugger
+    ~~~~~~~~
+    :copyright:
+    Copyright (c) 2016 Parsa Amini
+    Copyright (c) 2016 Hartmut Kaiser
+    Copyright (c) 2016 Thomas Heller
+
+    :license:
+    Distributed under the Boost Software License, Version 1.0. (See accompanying
+    file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+'''
 
 import signal
 from sys import stdout
 import time
 import _thread
 import threading
-from utils import config, vt100, print_out, print_ahead, print_error, raw_input_async
+from util import config, vt100, print_out, print_ahead, print_error, raw_input_async, repr_str
 import session
 
 # Constants
@@ -60,6 +67,7 @@ command_switcher = {
     session.modes.offline: session.offline.process,
     session.modes.local: session.local.process,
     session.modes.remote: session.remote.process,
+    session.modes.debugging: session.debugging.process,
 }
 
 def main():
@@ -74,32 +82,40 @@ def main():
     # Async output printing
     _thread.start_new_thread(noise, ())
 
+    # Main loop
     while state != session.modes.quit:
-        # FIXME: This is a blocking call. Have found no way to avoid it when readline is added to the equation
         vt100.unlock_keyboard()
-        user_input = raw_input_async(config.settings['ui']['prompt'])
-        vt100.lock_keyboard()
-        print_out(str(user_input.encode('unicode_escape'), 'ascii') if user_input else '')
+        # FIXME: raw_input_async still is a blocking call. Have found no way to
+        # avoid it. Reason: readline initiates a system call that I have no
+        # clue to get out of.
+        user_input, key_seq = raw_input_async(config.settings['ui']['prompt'])
+        # HACK: Temporarily disabled for debugging
+        #vt100.lock_keyboard()
+        ## HACK: Display the user's input
+        #print_out(str(user_input.encode('unicode_escape'), 'ascii') if user_input else '')
 
-        if user_input:
-            parts = user_input.split()
-            cmd, *args = parts
-            # Run the appropriate mode's processing function
-            command_fn = command_switcher.get(state)
+        # An empty string is a valid empty
+        # If the input was a control signal split might just remove it
+        cmd, *args = user_input if user_input else key_seq
+        # Run the appropriate mode's processing function
+        cmd_processor_fn = command_switcher.get(state)
 
-            try:
-                state, update_msg = command_fn(cmd, args)
-                print('update_msg:', update_msg)
-                if update_msg:
-                    print_out(update_msg)
-            except session.UnknownCommandError as e:
-                print_error('Unknown command: {uon}{cmd}{uoff}', cmd=e.expression)
-            except session.BadArgsError as e:
-                print_error('Command "{uon}{cmd}{uoff}" cannot be initiated with the arguments provided.\n{msg}', cmd=e.expression, msg=e.message)
-            except session.BadConfigError as e:
-                print_error('The command encountered errors with the provided arguments.\n{uon}{cmd}{uoff}: {msg}.', cmd=e.expression, msg=e.message)
-            except session.CommandFailedError as e:
-                print_error('The command encountered an error and did not run properly.\n{uon}{cmd}{uoff}: {msg}.', cmd=e.expression, msg=e.message)
+        try:
+            state, update_msg = cmd_processor_fn(cmd, args)
+            if update_msg:
+                print_out(update_msg)
+        except session.UnknownCommandError as e:
+            print_error('Unknown command: {u1}{cmd}{u0}', cmd=repr_str(e.expression))
+        except session.BadArgsError as e:
+            print_error('Command "{u1}{cmd}{u0}" cannot be initiated with the arguments provided.\n{msg}', cmd=e.expression, msg=e.message)
+        except session.BadConfigError as e:
+            print_error('The command encountered errors with the provided arguments.\n{u1}{cmd}{u0}: {msg}.', cmd=e.expression, msg=e.message)
+        except session.CommandFailedError as e:
+            print_error('The command encountered an error and did not run properly.\n{u1}{cmd}{u0}: {msg}.', cmd=e.expression, msg=e.message)
+        except session.CommandImplementationIncompleteError:
+            print_error('The implementation of command "{u1}{cmd}{u0}" is not complete yet.', cmd=cmd)
+        except KeyboardInterrupt:
+            print_error('Action cancelled by the user.')
 
 if __name__ == '__main__':
     # NOTE: Multiple SIGKILLs required to force close.
@@ -107,5 +123,6 @@ if __name__ == '__main__':
     try:
         main()
     finally:
+        # Clean up the terminal before letting go
         vt100.unlock_keyboard()
-        vt100.clear_all_chars_attrs()
+        vt100.format.clear_all_chars_attrs()

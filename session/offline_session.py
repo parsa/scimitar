@@ -7,30 +7,37 @@
 
 from . import modes, local_session as _local_s, remote_session as _remote_s
 from .exceptions import *
-from utils import config, print_ahead
+from util import config, print_ahead
 #######################
 # mode: offline
 #######################
 # Valid commands:
-## local <pid>[ <pid>...]
-## remote <login_node_hostname> <app_name> <jobid>
+## $ local raw
+## $ local attach <pid>[ <pid>...]
+## $ local ls
+## $ local ls <regex_pattern>
+## $ local do <routine>
+## $ remote <machine_name> <jobid>
+## $ remote <machine_name> ls
+## $ remote <machine_name> attach <app_name> <node:pid>[ <node:pid>...]
+## $ remote <machine_name> do <routine>
 ## quit
 def local(args):
     try:
         pids = []
         for arg in args:
             pids.append(int(arg))
-        _local_s.start_local(pids)
+        _local_s.launch(pids)
         return (modes.to_local, None)
     except TypeError:
-        return (modes.offline, 'Was expecting PIDs, received a non-integer')
+        raise BadArgsError('local', 'Was expecting PIDs, received a non-integer')
     _local_s.launch(pids)
-    raise CommandImplementationIncomplete
-    #return (modes.offline, None)
+    raise CommandImplementationIncompleteError
+    #return (modes.local, None)
     
 def remote(args):
     if len(args) != 2:
-        raise BadArgsError('remote', 'remote <login_node_hostname> <jobid>')
+        raise BadArgsError('remote', 'remote <machine_name> <jobid>')
     #print_ahead('Launching remote session')
     _remote_s.launch(name=args[0], jobid=args[1])
     return (modes.remote, None)
@@ -38,10 +45,15 @@ def remote(args):
 def quit(args):
     return (modes.quit, None)
 
+def debug(args):
+    import pdb; pdb.set_trace()
+    return (modes.offline, None)
+
 commands = {
     'local': local,
     'remote': remote,
     'quit': quit,
+    'debug': debug,
 }
 
 def process(cmd, args):
