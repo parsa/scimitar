@@ -10,6 +10,12 @@
     :license:
     Distributed under the Boost Software License, Version 1.0. (See accompanying
     file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+
+    module scimitar.session.offline_session
+
+    This module contains code used by the main Scimitar procedure. The code in
+    this module is executed in offline mode i.e. when Scimitar no debuggin
+    session is active and while being idle.
 '''
 
 from . import modes, local_session as _local_s, remote_session as _remote_s
@@ -20,15 +26,27 @@ from util import config, print_ahead
 #######################
 # Valid commands:
 ## $ local raw
-## $ local attach <pid>[ <pid>...]
+## $ local <pid>[ <pid>...]
 ## $ local ls
 ## $ local ls <regex_pattern>
-## $ local do <routine>
 ## $ remote <machine_name> <jobid>
 ## $ remote <machine_name> ls
 ## $ remote <machine_name> attach <app_name> <node:pid>[ <node:pid>...]
-## $ remote <machine_name> do <routine>
 ## quit
+
+local_commands = {
+    'raw': 'raw',
+    'attach': 'raw',
+    'ls': 'raw',
+}
+
+remote_commands = {
+    'job': 'launch',
+    'ls': 'ls',
+    'attach': 'attach',
+    'ls': 'ls',
+}
+
 def local(args):
     try:
         pids = []

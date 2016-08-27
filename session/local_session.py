@@ -10,6 +10,13 @@
     :license:
     Distributed under the Boost Software License, Version 1.0. (See accompanying
     file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+
+    module scimitar.session.local_session
+
+    This module contains code used by the main Scimitar procedure. The code in
+    this module is executed in local mode i.e. when Scimitar is attempting to
+    prepare GDB sessions on a local machine. When GDB session(s) are ready the
+    mode will change to debugging_session.
 '''
 
 from .exceptions import *
@@ -20,18 +27,22 @@ import pexpect as sp
 # mode: local
 #############################
 def raw(args):
+    # Launch GDB
     raise CommandImplementationIncompleteError
 
 def attach(args):
     raise CommandImplementationIncompleteError
 
-def ask(args):
+def list(args):
+    raise CommandImplementationIncompleteError
+
+def quit(args):
     raise CommandImplementationIncompleteError
 
 commands = {
     'raw': raw,
     'attach': attach,
-    'ask': ask,
+    'list': list,
     'quit': quit,
 }
 
@@ -43,6 +54,9 @@ def process(cmd, args):
 # MERGE: local_session (8c110db273af4a81bea68ef8686f1beb)
 def launch(pids):
     """Not active in this version"""
+    global session
+
+    session = LocalSession()
     raise CommandImplementationIncompleteError
     #for pid in pids:
     #    new_session = _local.LocalSession(pid)
@@ -52,11 +66,44 @@ def quit(args):
     raise CommandImplementationIncompleteError
 
 class LocalSession():
-    def __init__(self, PIDs):
-        self.pids=PIDs
+    def __init__(self):
+        self.terminals = None
+        self.active_terminal = None
+        self.connect_one()
+
+    @classmethod
+    def attach_to_pids(cls, pids):
         raise CommandImplementationIncompleteError
 
-    def query(self):
+    @classmethod
+    def raw(cls):
+        raise CommandImplementationIncompleteError
+
+    @classmethod
+    def list(cls):
+        raise CommandImplementationIncompleteError
+
+    def query(self, msg):
+        self.active_terminal.sendline(msg)
+        self.active_terminal.prompt()
+        return self.conn.before
+
+    def connect_one(self):
+        try:
+            gdb_cmd = configuration.settings['gdb']['cmd']
+            cmd_str = ' '.join(gdb_cmd)
+            conn = sp.spawn(cmd_str)
+            conn.expect('\s{1,2}\(gdb\) \s{1,2}')
+            conn.setecho(False)
+            if self.terminals:
+                self.terminals.append(conn)
+            else:
+                self.terminals = [conn]
+            self.active_terminal = conn
+        except Exception as e:
+            raise e
+
+    def connect_all(self):
         raise CommandImplementationIncompleteError
 
     def __enter__(self):

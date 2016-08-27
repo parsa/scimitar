@@ -12,9 +12,9 @@
     file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 '''
 
-from . import vt100
 from . import config
 from . import signals
+from . import vt100 as v
 from sys import stdout, exit
 from datetime import datetime as time
 import signal
@@ -23,18 +23,25 @@ import re
 import select
 from itertools import chain
 
-FORMATTING_CONSTS = {'u1': vt100.format._underline_on, 'u0': vt100.format._underline_off}
+FORMAT_CONSTS = {'u1': v.format._underline_on, 'u0': v.format._underline_off}
+
+def merge_dicts(dict_a, dict_b):
+    '''Creates a new dictionary including items in both dict_a and dict_b'''
+    return dict(chain(dict_a.items(), dict_b.items()))
 
 def print_out(expr, ending='\n', *args, **kwargs):
-    stdout.write(expr.format(*args, **dict(chain(kwargs.items(), FORMATTING_CONSTS.items()))) + ending)
+    '''Standard print() function in Scimitar'''
+    stdout.write(expr.format(*args, **merge_dicts(kwargs, FORMAT_CONSTS)) + ending)
     stdout.flush()
 
 def print_error(expr, *args, **kwargs):
-    print_out('\r' + vt100.format._fg_red + expr + vt100.format._clear_all_chars_attrs, *args, **kwargs)
+    '''Standard print() function for errors in Scimitar'''
+    print_out('\r' + v.format._clear_all_chars_attrs + v.format._alternate_intesity_on + v.format._fg_red + expr + v.format._clear_all_chars_attrs, *args, **kwargs)
 
 def print_ahead(expr, prompt='', *args, **kwargs):
+    '''Prints expr above the current line'''
     current_input = readline.get_line_buffer()
-    vt100.edit.erase_line()
+    v.erase_line()
     stdout.write('\r')
 
     print_out(expr, *args, **kwargs)
@@ -75,16 +82,17 @@ repr_str_dict = {
     '\x1f': '<C-_>', # US  (Unit separator)
 }
 def repr_str(string):
+    '''Calls repr() except for when string is an ASCII <C-key> char'''
     t = repr_str_dict.get(string)
     if not t:
         return repr(string)
     return t
         
-    
-
+# NOTE: What did I write this function for?
 def stream_readline(stream):
     return stream.readline()
 
+# NOTE: I don't remember why I wrote this one either
 def stream_writeline(msg, stream):
     stream.write(msg)
     stream.flush()
@@ -139,7 +147,7 @@ def raw_input_async(prompt='', timeout=5):
         return None, '\x1a'
     except signals.QuitSignal: # <C-\> FS (File Separator) 0x1c
         # HACK: For debugging. Disable for release
-        #import pdb; pdb.set_trace()
+        import pdb; pdb.set_trace()
         return None, '\x1c'
     except KeyboardInterrupt: # <C-c> ETX (End of Text) 0x03
         # HACK: Disable for production
@@ -147,7 +155,7 @@ def raw_input_async(prompt='', timeout=5):
             if (time.now() - raw_input_async.last_kill_sig).seconds < config.settings['signals']['sigkill_last']:
                 # The user is frantically sending <C-c>s
                 if raw_input_async.kill_sigs >= config.settings['signals']['sigkill'] - 1:
-                    print_out('Got {u1}<C-c>{u0}. ABAAAAAAANDON SHIP!')
+                    print_out('\rGot {u1}<C-c>{u0}. ABAAAAAAANDON SHIP!')
                     exit(0)
             else:
                 raw_input_async.kill_sigs = 0

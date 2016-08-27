@@ -12,7 +12,7 @@
     file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 '''
 
-from .terminal import apply
+from .apply import apply
 
 _cursor_key_app         = '[?1h'      # 132 Characters on
 cursor_key_app          = lambda: apply(_cursor_key_app)

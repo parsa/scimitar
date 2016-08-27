@@ -12,7 +12,7 @@
     file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 '''
 
-from .terminal import apply
+from .apply import apply
 
 _up                              = lambda count=1: '\x1b[{COUNT}A'.format(COUNT=count)
 up                               = lambda count=1: apply(up(count))

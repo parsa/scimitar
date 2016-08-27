@@ -12,7 +12,7 @@
     file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 '''
 
-from .terminal import apply
+from .apply import apply
 
 _clear_all_chars_attrs           = '\033[0m'
 clear_all_chars_attrs            = lambda: apply(_clear_all_chars_attrs)

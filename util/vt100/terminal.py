@@ -12,11 +12,7 @@
     file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 '''
 
-from sys import stdout as o
-
-def apply(cmd):
-    o.write(cmd)
-    o.flush()
+from .apply import apply
 
 _reset                           = '\033c'
 reset                            = lambda: apply(_reset)

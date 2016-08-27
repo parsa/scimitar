@@ -20,6 +20,15 @@ and add to it to meet your needs.
 * Start a session by `remote <host> <scheduler job id>`
 * Once you're connected you can switch between localities by using the command `switch <locality id>`
 
+## Commands
+* local raw
+* local <pid>[ <pid>...]
+* local ls
+* local ls <regex_pattern>
+* remote <machine_name>
+* remote <machine_name> <jobid>
+* remote <machine_name> attach <app_name> <node:pid>[ <node:pid>...]
+
 ### Pending merges:
 * GDB/MI
   * MERGE: mi_parser (8ec00bfed88d4beda1c37a516d953638)

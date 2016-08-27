@@ -12,7 +12,7 @@
     file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 '''
 
-from .terminal import apply
+from .apply import apply
 
 _insert_mode                     = '\033[4h'
 insert_mode                      = lambda: apply(_insert_mode)

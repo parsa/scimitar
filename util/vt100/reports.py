@@ -12,7 +12,7 @@
     file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 '''
 
-from .terminal import apply
+from .apply import apply
 
 _report_curser_pos       = '\033[6n'        # Cursor position report
 report_curser_pos        = lambda: apply(_report_curser_pos)

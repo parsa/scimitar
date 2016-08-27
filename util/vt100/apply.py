@@ -12,6 +12,9 @@
     file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 '''
 
-from . import vt100
-from .exceptions import *
-from .utils import *
+from sys import stdout as o
+
+def apply(cmd, fd=o):
+    o.write(cmd)
+    o.flush()
+

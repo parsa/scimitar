@@ -42,7 +42,6 @@ settings = {
                 '-interpreter=mi2', # Use GDB/MI2 interface
                 '-quiet',           # Suppress banner
                 '--nx',             # Don't load any .gdbinits whatsoever
-                '--nw',             # Suppress UI just in case somehow it's set
             ],
         'attach': '--pid={pid}',
         'mi_prompt_pattern': '\[(\]gdb\[)\] \[\r\n\]+',
