@@ -5,8 +5,9 @@ import datetime
 import ctypes
 
 class GidTypePrinter(object):
-    def __init__(self, val):
+    def __init__(self, expr, val):
         self.val = val
+        self.expr = expr
         self.id_msb_ = ctypes.c_long(self.val['id_msb_']).value
         self.id_lsb_ = ctypes.c_long(self.val['id_msb_']).value
 
@@ -16,7 +17,7 @@ class GidTypePrinter(object):
     def to_string(self):
         id_msb_ = ctypes.c_long(self.val['id_msb_']).value
         id_lsb_ = ctypes.c_long(self.val['id_msb_']).value
-        return "struct hpx::naming::gid_type {{ msb=%#02x lsb=%#02x }} %#02x" % (id_msb_, id_lsb_, self.val.address)
+        return "(%s) {{ msb=%#02x lsb=%#02x }} %#02x" % (self.expr, id_msb_, id_lsb_, self.val.address)
 
     def children(self):
         result = []
@@ -40,8 +41,9 @@ class GidTypePrinter(object):
         return result
 
 class IdTypePrinter(object):
-    def __init__(self, val):
+    def __init__(self, expr, val):
         self.val = val
+        self.expr = expr
         self.gid_ = self.val['gid_']
         self.Ppx = self.val['gid_']['px']
         self.id_type_management_enum = {
@@ -63,7 +65,7 @@ class IdTypePrinter(object):
             type_ = ctypes.c_int(px['type_']).value
             str_type_ = self.id_type_management_enum.get(type_, 'None')
             txt = "{{ msb=%#02x lsb=%#02x type=%s }}" % (id_msb_, id_lsb_, str_type_)
-        return "(hpx::naming::id_type) %s %#02x" % (txt, self.val.address)
+        return "(%s) %s %#02x" % (self.expr, txt, self.val.address)
 
     def children(self):
         if self.Ppx:
@@ -99,16 +101,16 @@ class IdTypePrinter(object):
 def lookup_type(val):
     type_ = val.type
 
-    if type_.code == gdb.TYPE_CODE_REF:
+    if type_.code == gdb.TYPE_CODE_PTR:
         type_ = type.dereference()
 
     type_ = type_.unqualified().strip_typedefs()
 
     expr = str(type_)
-    if re.match('^(const )?hpx::naming::gid_type?( const)?$', expr):
-        return GidTypePrinter(val)
+    if re.match('^(const )?hpx::naming::gid_type( \*)?( const)?$', expr):
+        return GidTypePrinter(expr, val)
     elif re.match('^(const )?hpx::naming::id_type( \*)?( const)?$', expr):
-        return IdTypePrinter(val)
+        return IdTypePrinter(expr, val)
     return None
 
 gdb.pretty_printers.append(lookup_type)
