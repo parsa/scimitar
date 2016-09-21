@@ -119,7 +119,7 @@ class RemoteSession():
         try:
             # SSH to the head node.
             print_ahead('Connecting to {host}...', host=self.config.login_node)
-            with Remote_JobExaminer(self.config) as examiner:
+            with RemoteJobExaminer(self.config) as examiner:
                 # Retrieve list of nodes
                 self.nodes = examiner.try_list_nodes(self.jobid)
                 print_ahead('Nodes in job {u1}{jobid}{u0}: {u1}{nodes}{u0}',
@@ -181,7 +181,7 @@ class RemoteSession():
         self.disconnect_all()
 
 
-class Remote_JobExaminer:
+class RemoteJobExaminer:
     def __init__(self, cfg):
         self.cfg = cfg
         self.conn = None

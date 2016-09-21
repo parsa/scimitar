@@ -13,5 +13,5 @@
 '''
 
 class modes:
-    offline, local, remote, debugging, quit = range(5)
+    offline, debugging, quit = range(3)
 

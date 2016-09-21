@@ -63,10 +63,8 @@ def noise():
 #        print_ahead('Noise.', config.settings['ui']['prompt'])
 
 # Dispatch the command and its arguments to the appropriate mode's processor
-command_switcher = {
+command_handler_switcher = {
     session.modes.offline: session.offline.process,
-    session.modes.local: session.local.process,
-    session.modes.remote: session.remote.process,
     session.modes.debugging: session.debugging.process,
 }
 
@@ -99,7 +97,7 @@ def main():
         packed_input = user_input if user_input else key_seq
         cmd, args = packed_input[0], packed_input[1:]
         # Run the appropriate mode's processing function
-        cmd_processor_fn = command_switcher.get(state)
+        cmd_processor_fn = command_handler_switcher.get(state)
 
         try:
             state, update_msg = cmd_processor_fn(cmd, args)
