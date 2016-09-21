@@ -12,7 +12,7 @@ class GidTypePrinter(object):
         self.id_lsb_ = ctypes.c_long(self.val['id_msb_']).value
 
     def display_hint(self):
-        return "hpx::naming::gid_type"
+        return self.expr
 
     def to_string(self):
         id_msb_ = ctypes.c_long(self.val['id_msb_']).value
@@ -54,7 +54,7 @@ class IdTypePrinter(object):
         }
 
     def display_hint(self):
-        return "hpx::naming::id_type"
+        return self.expr
 
     def to_string(self):
         txt = ''
@@ -63,7 +63,7 @@ class IdTypePrinter(object):
             id_msb_ = px['id_msb_']
             id_lsb_ = px['id_lsb_']
             type_ = ctypes.c_int(px['type_']).value
-            str_type_ = self.id_type_management_enum.get(type_, 'None')
+            str_type_ = self.id_type_management_enum.get(type_, 'Unknown: %s' % type_)
             txt = "{{ msb=%#02x lsb=%#02x type=%s }}" % (id_msb_, id_lsb_, str_type_)
         return "(%s) %s %#02x" % (self.expr, txt, self.val.address)
 
