@@ -12,44 +12,25 @@
     file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 '''
 import gdb
-import re
-import sys
-import datetime
-import ctypes
+
+printer_dict = {}
 
 class ThreadDescriptionPrinter(object):
     def __init__(self, expr, val):
         self.val = val
         self.expr = expr
-        self.type_ = val['type_']
 
     def display_hint(self):
         return self.expr
 
     def to_string(self):
-        state_ = None
-        o = ''
-        if int(self.type_) == 0:
-            o = '[desc] {%s}' % self.val['data_']['desc_']
-        elif int(self.type_) == 1:
+        txt = ''
+        if bool(gdb.parse_and_eval('type_ == 0')):
+            txt = '[desc] {%s}' % gdb.parse_and_eval('data_.desc_')
+        elif bool(gdb.parse_and_eval('type_ == 1')):
             t = gdb.lookup_type('void').pointer()
-            o = '[addr] {%s}' % self.val['data_']['addr_'].cast(t)
+            txt = '[addr] {%s}' % gdb.parse_and_eval('(void*)data_.addr_')
                 
-        return "(%s) {{ %s }} %#02x" % (self.expr, o, self.val.address)
-
-def lookup_type(val):
-    type_ = val.type
-
-    if type_.code == gdb.TYPE_CODE_PTR:
-        type_ = type.dereference()
-
-    type_ = type_.unqualified().strip_typedefs()
-
-    expr = str(type_)
-    m = re.match('^(const )?hpx::util::thread_description( \*)?( const)?$', expr)
-    if m:
-        return ThreadDescriptionPrinter(expr, val)
-    return None
-
-gdb.pretty_printers.append(lookup_type)
+        return "(%s) {{ %s }} %#02x" % (self.expr, txt, self.val.address)
+printer_dict['hpx::util::thread_description'] = ThreadDescriptionPrinter
 
