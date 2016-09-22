@@ -38,12 +38,10 @@ class ClientBasePrinter(object):
         if bool(gdb.parse_and_eval('shared_state_.px != 0')):
             state_ = int(self.px['state_'])
             if bool(gdb.parse_and_eval('shared_state_.px->state_ == 3')):
-                P_type = gdb.lookup_type('hpx::naming::id_type').pointer()
                 result.extend([
                     ('value', '%s' % gdb.parse_and_eval('*((hpx::naming::id_type*)(shared_state_.px->storage_.data_.buf))')),
                 ])
             elif bool(gdb.parse_and_eval('shared_state_.px->state_ == 5')):
-                P_type = gdb.lookup_type('boost::exception_ptr').pointer()
                 result.extend([
                     ('exception', '%s' % gdb.parse_and_eval('*((boost::exception_ptr*)(shared_state_.px->storage_.data_.buf))')),
                 ])
