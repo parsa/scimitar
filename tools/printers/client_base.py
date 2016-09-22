@@ -19,8 +19,6 @@ class ClientBasePrinter(object):
     def __init__(self, expr, val):
         self.val = val
         self.expr = expr
-        self.Ppx = val['shared_state_']['px']
-        self.px = self.Ppx.dereference()
 
     def display_hint(self):
         return self.expr
