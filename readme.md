@@ -4,8 +4,8 @@
 ### Testing HPX Pretty Printers
 * The printers are in the [tools](https://github.com/parsa/scimitar/tree/master/tools) directory.
 * To import the printers you have two options:
-    * run `python execfile('PATH_TO_hpx-gdb.py_FILE')`.
-    * run `python sys.path.append('PATH_TO_TOOLS_DIR')`, followed by 'import printers'
+    * Run `python execfile('PATH_TO_hpx-gdb.py_FILE')`.
+    * Run `python sys.path.append('PATH_TO_TOOLS_DIR')`, followed by `import printers`
 
 ### Prerequisites
 * Software:
