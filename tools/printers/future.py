@@ -42,10 +42,10 @@ class FuturePrinter(object):
 def lookup_type(val):
     type_ = val.type
 
-    #if type_.code == gdb.TYPE_CODE_PTR:
-    #    type_ = type.dereference()
+    if type_.code == gdb.TYPE_CODE_PTR:
+        type_ = type.dereference()
 
-    #type_ = type_.unqualified().strip_typedefs()
+    type_ = type_.unqualified().strip_typedefs()
 
     expr = str(type_)
     m = re.match('^(const )?hpx::lcos::(shared_)?future<(?P<type>\w*)>( \*)?( const)?$', expr)
