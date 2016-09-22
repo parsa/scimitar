@@ -1,6 +1,10 @@
 # Scimitar
 ## Ye Distributed Debugger
 
+### Testing HPX Pretty Printers
+* The printers are in the [tools](https://github.com/parsa/scimitar/tree/master/tools) directory.
+* To import the printers run `python execfile('PATH_TO_hpx-gdb.py_FILE')`.
+
 ### Prerequisites
 * Software:
   * Python 2.7
