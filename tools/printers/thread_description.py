@@ -28,7 +28,6 @@ class ThreadDescriptionPrinter(object):
         if bool(gdb.parse_and_eval('type_ == 0')):
             txt = '[desc] {%s}' % gdb.parse_and_eval('data_.desc_')
         elif bool(gdb.parse_and_eval('type_ == 1')):
-            t = gdb.lookup_type('void').pointer()
             txt = '[addr] {%s}' % gdb.parse_and_eval('(void*)data_.addr_')
                 
         return "(%s) {{ %s }} %#02x" % (self.expr, txt, self.val.address)
