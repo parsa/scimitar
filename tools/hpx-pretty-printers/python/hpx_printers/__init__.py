@@ -71,6 +71,11 @@ def build_printer_dict():
         pattern = re.compile('^(const )?%s( \*)?( const)?$' % k)
         printer_dict[pattern] = v
 
-build_printer_dict()
-gdb.pretty_printers.append(lookup_printer)
+def register_hpx_printers(obj):
+    build_printer_dict()
+
+    if obj == None:
+        obj = gdb
+
+    obj.pretty_printers.append(lookup_printer)
 
