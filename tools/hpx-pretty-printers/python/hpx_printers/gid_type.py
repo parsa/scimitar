@@ -76,7 +76,7 @@ class IdTypePrinter(object):
     def children(self):
         result = []
         if bool(gdb.parse_and_eval('%d != 0' % (self.val['gid_']['px'],))):
-            if bool(gdb.parse_and_eval('(%s != unmanaged) != 0' % (self.val['gid_']['px']['type_'],))):
+            if bool(gdb.parse_and_eval('(%s != hpx::naming::id_type::unmanaged) != 0' % (self.val['gid_']['px']['type_'],))):
                 result.extend([
                     ('has_credit', '%s' % gdb.parse_and_eval('(%d & 0x40000000ull) ? true : false' % (self.val['gid_']['px']['id_msb_'],))),
                     ('log2credits', '%s' % gdb.parse_and_eval('(%d >> 24) & 0x1full' % (self.val['gid_']['px']['id_msb_'],))),
@@ -89,7 +89,7 @@ class IdTypePrinter(object):
                 ])
             result.extend([
                 ('msb', '%#02x' % gdb.parse_and_eval('%d & 0x7fffffull' % (self.val['gid_']['px']['id_msb_'],))),
-                ('lsb', '%#02x' % gdb.parse_and_eval('%d_' % (self.val['gid_']['px']['id_lsb_'],))),
+                ('lsb', '%#02x' % gdb.parse_and_eval('%d' % (self.val['gid_']['px']['id_lsb_'],))),
                 ('type', '%s' % gdb.parse_and_eval('%s' % (self.val['gid_']['px']['type_'],))),
                 ('is_locked', '%s' % gdb.parse_and_eval('(%d & 0x20000000ull) ? true : false' % (self.val['gid_']['px']['id_msb_'],))),
                 ('dont_cache', '%s' % gdb.parse_and_eval('(%d & 0x00800000ull) ? true : false' % (self.val['gid_']['px']['id_msb_'],))),
