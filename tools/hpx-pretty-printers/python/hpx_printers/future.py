@@ -16,33 +16,34 @@ import gdb
 printer_dict = {}
 
 class FuturePrinter(object):
-    def __init__(self, expr, val, tmpltype):
+    def __init__(self, expr, val, tmpl):
         self.val = val
         self.expr = expr
+        self.tmpl = tmpl
 
     def display_hint(self):
         return self.expr
 
     def to_string(self):
         txt = '%s' % gdb.parse_and_eval('shared_state_.px')
-        return "(%s) {{ %s }} %#02x" % (self.expr, txt, self.val.address)
+        return "(%s) {{ %s }} %#02x" % (self.expr, txt, self.val.address,)
 
     def children(self):
         result = []
         if self.tmpltype == 'void':
             # FIXME: Something's not right here
-            if bool(gdb.parse_and_eval('%s == 5' % self.val['shared_state_']['px']['state_'])):
+            if bool(gdb.parse_and_eval('%s == 5' % (self.val['shared_state_']['px']['state_'],))):
                 result.extend([
-                    ('value', '%s' % gdb.parse_and_eval('*((boost::exception_ptr*)&(%s))' % self.val['shared_state_']['px']['storage_'])),
+                    ('value', '%s' % gdb.parse_and_eval('*((boost::exception_ptr*)&(%s))' % (self.val['shared_state_']['px']['storage_'],))),
                 ])
         else:
             if bool(gdb.parse_and_eval('shared_state_.px->state_ == 3')):
                 result.extend([
-                    ('value', '%s' % gdb.parse_and_eval('*(($T1 *)&(%s))' % self.val['shared_state_']['px']['storage_'])),
+                    ('value', '%s' % gdb.parse_and_eval('*(($%s *)&(%s))' % (self.tmpl[0], self.val['shared_state_']['px']['storage_'],))),
                 ])
             elif bool(gdb.parse_and_eval('shared_state_.px->state_ == 5')):
                 result.extend([
-                    ('value', '%s' % gdb.parse_and_eval('*((boost::exception_ptr*)&(%s))' % self.val['shared_state_']['px']['storage_'])),
+                    ('value', '%s' % gdb.parse_and_eval('*((boost::exception_ptr*)&(%s))' % (self.val['shared_state_']['px']['storage_'],))),
                 ])
                 
         return result

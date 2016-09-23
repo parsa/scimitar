@@ -25,16 +25,16 @@ class BacktracePrinter(object):
 
     def to_string(self):
         txt = "{{ size=%s }}" % (
-            gdb.parse_and_eval('%s' % self.val['frames_']['_Mysize']),
+            gdb.parse_and_eval('%s' % (self.val['frames_']['_Mysize'],)),
         )
         return "(%s) {{ %s }} %#02x" % (self.expr, txt, self.val.address)
 
     def children(self):
         result = [
             ('stacktrace', '%s,[%s]%s' % (
-                gdb.parse_and_eval('%s' % self.val['frames_']['_Myfirst']),
-                gdb.parse_and_eval('%s' % self.val['frames_']['_Mysize']),
-                gdb.parse_and_eval('%s' % self.val['stackTrace']))
+                gdb.parse_and_eval('%s' % (self.val['frames_']['_Myfirst'],)),
+                gdb.parse_and_eval('%s' % (self.val['frames_']['_Mysize'],)),
+                gdb.parse_and_eval('%s' % (self.val['stackTrace'],)))
             ),
         ]
                 
