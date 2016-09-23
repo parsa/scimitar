@@ -33,11 +33,11 @@ class GidTypePrinter(object):
 
     def children(self):
         result = []
-        if bool(gdb.parse_and_eval('(%s & 0x40000000ull) != 0' % (self.val['id_msb_'],))):
+        if bool(gdb.parse_and_eval('(%d & 0x40000000ull) != 0' % (self.val['id_msb_'],))):
             result.extend([
-                ('log2credits', '%s' % gdb.parse_and_eval('(%s >> 24) & 0x1full' % (self.val['id_msb_'],))),
-                ('credits', '%#02x' % gdb.parse_and_eval('1ull << ((%s >> 24) & 0x1full)' % (self.val['id_msb_'],))),
-                ('was_split', '%s' % gdb.parse_and_eval('(%s & 0x80000000ull) ? true : false' % (self.val['id_msb_'],))),
+                ('log2credits', '%s' % gdb.parse_and_eval('(%d >> 24) & 0x1full' % (self.val['id_msb_'],))),
+                ('credits', '%#02x' % gdb.parse_and_eval('1ull << ((%d >> 24) & 0x1full)' % (self.val['id_msb_'],))),
+                ('was_split', '%s' % gdb.parse_and_eval('(%d & 0x80000000ull) ? true : false' % (self.val['id_msb_'],))),
             ])
         if bool(gdb.parse_and_eval('((%s >> 32) & 0xffffffffull) != 0' % self.val['id_msb_'])):
             result.extend([
@@ -45,7 +45,7 @@ class GidTypePrinter(object):
             ])
         result.extend([
             ('msb', '%#02x' % gdb.parse_and_eval('%s & 0x7fffffull' % (self.val['id_msb_'],))),
-            ('lsb', '%#02x' % gdb.parse_and_eval('%s') % (self.val['id_lsb_'],)),
+            ('lsb', '%#02x' % gdb.parse_and_eval('%s' % (self.val['id_lsb_']),)),
             ('has_credit', '%s' % gdb.parse_and_eval('(%s & 0x40000000ull) ? true : false' % (self.val['id_msb_'],))),
             ('is_locked', '%s' % gdb.parse_and_eval('(%s & 0x20000000ull) ? true : false' % (self.val['id_msb_'],))),
             ('dont_cache', '%s' % gdb.parse_and_eval('(%s & 0x00800000ull) ? true : false' % (self.val['id_msb_'],))),
