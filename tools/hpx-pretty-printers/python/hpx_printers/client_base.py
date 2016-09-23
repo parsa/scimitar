@@ -24,10 +24,9 @@ class ClientBasePrinter(object):
         return self.expr
 
     def to_string(self):
-        state_ = None
         txt = ''
-        if bool(gdb.parse_and_eval('shared_state_.px != 0')):
-            txt = '%s' % gdb.parse_and_eval('shared_state_.px->state_')
+        if bool(gdb.parse_and_eval('%s != 0' % self.val['shared_state_']['px'])):
+            txt = '%s' % gdb.parse_and_eval('%s' % self.val['shared_state_']['px']['state_'])
         else:
             txt = 'empty'
                 
@@ -35,18 +34,17 @@ class ClientBasePrinter(object):
 
     def children(self):
         result = [] 
-        if bool(gdb.parse_and_eval('shared_state_.px != 0')):
-            state_ = int(self.px['state_'])
-            if bool(gdb.parse_and_eval('shared_state_.px->state_ == 3')):
+        if bool(gdb.parse_and_eval('%s != 0' % self.val['shared_state_']['px'])):
+            if bool(gdb.parse_and_eval('%s == 3' % self.val['shared_state_']['px']['state_'])):
                 result.extend([
-                    ('value', '%s' % gdb.parse_and_eval('*((hpx::naming::id_type*)(shared_state_.px->storage_.data_.buf))')),
+                    ('value', '%s' % gdb.parse_and_eval('*((hpx::naming::id_type*)(%s))' % self.val['shared_state_']['px']['storage_']['data_']['buf'])),
                 ])
-            elif bool(gdb.parse_and_eval('shared_state_.px->state_ == 5')):
+            elif bool(gdb.parse_and_eval('%s == 5') % self.val['shared_state_']['px']['state_']):
                 result.extend([
-                    ('exception', '%s' % gdb.parse_and_eval('*((boost::exception_ptr*)(shared_state_.px->storage_.data_.buf))')),
+                    ('exception', '%s' % gdb.parse_and_eval('*((boost::exception_ptr*)(%s))' % self.val['shared_state_']['px']['storage_']['data_']['buf'])),
                 ])
             result.extend([
-                ('count', '%s' % gdb.parse_and_eval('shared_state_.px->count_')),
+                ('count', '%s' % gdb.parse_and_eval('%s' % self.val['shared_state_']['px']['count_'])),
             ])
                 
         return result

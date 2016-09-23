@@ -27,10 +27,10 @@ class TupleMemberPrinter(object):
     def to_string(self):
         txt = ''
         try:
-            txt = '%s' % gdb.parse_and_eval('_value')
+            txt = '%s' % gdb.parse_and_eval('%s' % self.val['_value'])
         except gdb.error:
             try:
-                txt = '%s' % gdb.parse_and_eval('*(%s *)this' % self.tmpl[1])
+                txt = '%s' % gdb.parse_and_eval('*(%s *)%s' % (self.tmpl[1], self.val))
             except gdb.error:
                 pass
                 
@@ -47,7 +47,7 @@ class TuplePrinter(object):
         return self.expr
 
     def to_string(self):
-        parts = ['%s' % gdb.parse_and_eval('(hpx::util::detail::tuple_member<%d,%s,void>&)_impl' % (i, t)) for i, t in enumerate(self.tmpl)]
+        parts = ['%s' % gdb.parse_and_eval('(hpx::util::detail::tuple_member<%d,%s,void>&)%s' % (i, t, self.val['_impl'])) for i, t in enumerate(self.tmpl)]
         txt = ', '.join(parts)
                 
         return "(%s) {{ %s }} %#02x" % (self.expr, txt, self.val.address)
@@ -56,7 +56,7 @@ class TuplePrinter(object):
         result = [] 
         for i, t in enumerate(self.tmpl):
             result.extend([
-                ('%d' % i, '%s' % gdb.parse_and_eval('(hpx::util::detail::tuple_member<%d,%s,void>&)_impl' % (i, t))),
+                ('%d' % i, '%s' % gdb.parse_and_eval('(hpx::util::detail::tuple_member<%d,%s,void>&)%s' % (i, t, self.val['_impl']))),
             ])
                 
         return result

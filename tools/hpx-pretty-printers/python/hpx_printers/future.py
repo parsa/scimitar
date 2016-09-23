@@ -31,18 +31,18 @@ class FuturePrinter(object):
         result = []
         if self.tmpltype == 'void':
             # FIXME: Something's not right here
-            if bool(gdb.parse_and_eval('shared_state_.px->state_ == 5')):
+            if bool(gdb.parse_and_eval('%s == 5' % self.val['shared_state_']['px']['state_'])):
                 result.extend([
-                    ('value', '%s' % gdb.parse_and_eval('*((boost::exception_ptr*)(shared_state_.px->storage_._Pad))')),
+                    ('value', '%s' % gdb.parse_and_eval('*((boost::exception_ptr*)&(%s))' % self.val['shared_state_']['px']['storage_'])),
                 ])
         else:
             if bool(gdb.parse_and_eval('shared_state_.px->state_ == 3')):
                 result.extend([
-                    ('value', '%s' % gdb.parse_and_eval('*(($T1 *)(shared_state_.px->storage_._Pad))')),
+                    ('value', '%s' % gdb.parse_and_eval('*(($T1 *)&(%s))' % self.val['shared_state_']['px']['storage_'])),
                 ])
             elif bool(gdb.parse_and_eval('shared_state_.px->state_ == 5')):
                 result.extend([
-                    ('value', '%s' % gdb.parse_and_eval('*((boost::exception_ptr*)(shared_state_.px->storage_._Pad))')),
+                    ('value', '%s' % gdb.parse_and_eval('*((boost::exception_ptr*)&(%s))' % self.val['shared_state_']['px']['storage_'])),
                 ])
                 
         return result

@@ -31,33 +31,27 @@ def get_basic_type(type_):
     return type_
 
 def lookup_printer(val):
-    raw_type_ = val.type
-    type_ = get_basic_type(raw_type_)
+    type_ = get_basic_type(val.type)
+    expr = str(val.type)
 
-    type_ = type_.unqualified().strip_typedefs()
-
-    expr = str(raw_type_)
     for k, v in printer_dict.iteritems():
-        pass
         m = k.match(expr)
         if m:
-            tmpl = None
             try:
                 tmpl = m.group('tmpl')
+                if tmpl:
+                    return v(expr, val, tmpl)
             except IndexError:
-                pass
-            if tmpl:
-                return v(expr, val, tmpl)
-            return v(expr, val)
-            
+                return v(expr, val)
     return None
 
 def build_printer_dict():
     global printer_dict
     global printer_dict_raw
 
-    import backtrace, client_base, future, gid_type, thread_description, thread_state, tuple_
     include_dicts = lambda m: printer_dict_raw.update(m.printer_dict)
+
+    import backtrace, client_base, future, gid_type, thread_description, thread_state, tuple_
 
     include_dicts(backtrace)
     include_dicts(client_base)
@@ -71,7 +65,7 @@ def build_printer_dict():
         pattern = re.compile('^(const )?%s( \*)?( const)?$' % k)
         printer_dict[pattern] = v
 
-def register_hpx_printers(obj):
+def register_hpx_printers(obj=None):
     build_printer_dict()
 
     if obj == None:

@@ -26,29 +26,29 @@ class GidTypePrinter(object):
     def to_string(self):
         return "(%s) {{ msb=%#02x lsb=%#02x }} %#02x" % (
             self.expr,
-            gdb.parse_and_eval('id_msb_'),
-            gdb.parse_and_eval('id_lsb_'),
+            self.val['id_msb_'],
+            self.val['id_lsb_'],
             self.val.address,
         )
 
     def children(self):
         result = []
-        if bool(gdb.parse_and_eval('(id_msb_ & 0x40000000ull) != 0')):
+        if bool(gdb.parse_and_eval('(%s & 0x40000000ull) != 0' % self.val['id_msb_'])):
             result.extend([
-                ('log2credits', '%s' % gdb.parse_and_eval('(id_msb_ >> 24) & 0x1full')),
-                ('credits', '%#02x' % gdb.parse_and_eval('1ull << ((id_msb_ >> 24) & 0x1full)')),
-                ('was_split', '%s' % gdb.parse_and_eval('(id_msb_ & 0x80000000ull) ? true : false')),
+                ('log2credits', '%s' % gdb.parse_and_eval('(%s >> 24) & 0x1full' % self.val['id_msb_'])),
+                ('credits', '%#02x' % gdb.parse_and_eval('1ull << ((%s >> 24) & 0x1full)' % self.val['id_msb_'])),
+                ('was_split', '%s' % gdb.parse_and_eval('(%s & 0x80000000ull) ? true : false' % self.val['id_msb_'])),
             ])
-        if bool(gdb.parse_and_eval('((id_msb_ >> 32) & 0xffffffffull) != 0')):
+        if bool(gdb.parse_and_eval('((%s >> 32) & 0xffffffffull) != 0' % self.val['id_msb_'])):
             result.extend([
-                ('locality_id', '%s' % gdb.parse_and_eval('((id_msb_ >> 32) & 0xffffffffull) - 1')),
+                ('locality_id', '%s' % gdb.parse_and_eval('((%s >> 32) & 0xffffffffull) - 1') % self.val['id_msb_']),
             ])
         result.extend([
-            ('msb', '%#02x' % gdb.parse_and_eval('id_msb_ & 0x7fffffull')),
-            ('lsb', '%#02x' % gdb.parse_and_eval('id_lsb_')),
-            ('has_credit', '%s' % gdb.parse_and_eval('(id_msb_ & 0x40000000ull) ? true : false')),
-            ('is_locked', '%s' % gdb.parse_and_eval('(id_msb_ & 0x20000000ull) ? true : false')),
-            ('dont_cache', '%s' % gdb.parse_and_eval('(id_msb_ & 0x00800000ull) ? true : false')),
+            ('msb', '%#02x' % gdb.parse_and_eval('%s & 0x7fffffull') % self.val['id_msb_']),
+            ('lsb', '%#02x' % gdb.parse_and_eval('%s') % self.val['id_lsb_']),
+            ('has_credit', '%s' % gdb.parse_and_eval('(%s & 0x40000000ull) ? true : false') % self.val['id_msb_']),
+            ('is_locked', '%s' % gdb.parse_and_eval('(%s & 0x20000000ull) ? true : false') % self.val['id_msb_']),
+            ('dont_cache', '%s' % gdb.parse_and_eval('(%s & 0x00800000ull) ? true : false') % self.val['id_msb_']),
         ])
         return result
 printer_dict['hpx::naming::gid_type'] = GidTypePrinter
