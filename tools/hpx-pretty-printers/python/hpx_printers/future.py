@@ -25,7 +25,7 @@ class FuturePrinter(object):
         return self.expr
 
     def to_string(self):
-        txt = '%s' % gdb.parse_and_eval('shared_state_.px')
+        txt = '%s' % gdb.parse_and_eval('%s' % (self.val['shared_state_']['px'],))
         return "(%s) {{ %s }} %#02x" % (self.expr, txt, self.val.address,)
 
     def children(self):
@@ -37,11 +37,11 @@ class FuturePrinter(object):
                     ('value', '%s' % gdb.parse_and_eval('*((boost::exception_ptr*)&(%s))' % (self.val['shared_state_']['px']['storage_'],))),
                 ])
         else:
-            if bool(gdb.parse_and_eval('shared_state_.px->state_ == 3')):
+            if bool(gdb.parse_and_eval('%d == 3' % (self.val['shared_state_']['px']['state_'],))):
                 result.extend([
                     ('value', '%s' % gdb.parse_and_eval('*(($%s *)&(%s))' % (self.tmpl[0], self.val['shared_state_']['px']['storage_'],))),
                 ])
-            elif bool(gdb.parse_and_eval('shared_state_.px->state_ == 5')):
+            elif bool(gdb.parse_and_eval('%d == 5' % (self.val['shared_state_']['px']['state_'],))):
                 result.extend([
                     ('value', '%s' % gdb.parse_and_eval('*((boost::exception_ptr*)&(%s))' % (self.val['shared_state_']['px']['storage_'],))),
                 ])
