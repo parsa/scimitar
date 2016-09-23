@@ -93,7 +93,7 @@ class IdTypePrinter(object):
                 ('type', '%s' % gdb.parse_and_eval('%s' % (self.val['gid_']['px']['type_'],))),
                 ('is_locked', '%s' % gdb.parse_and_eval('(%d & 0x20000000ull) ? true : false' % (self.val['gid_']['px']['id_msb_'],))),
                 ('dont_cache', '%s' % gdb.parse_and_eval('(%d & 0x00800000ull) ? true : false' % (self.val['gid_']['px']['id_msb_'],))),
-                ('count', '%s' % gdb.parse_and_eval('%s' % (self.val['gid_']['px']['count_']['value_'],))),
+                ('count', '%s' % gdb.parse_and_eval('%s' % (self.val['gid_']['px']['count_']['value_']['m_storage'],))),
             ])
         return result
 printer_dict['hpx::naming::id_type'] = IdTypePrinter
