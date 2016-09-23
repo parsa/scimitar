@@ -25,9 +25,12 @@ except NameError:
     sys.path.append(os.getcwd() + '/../python')
 
 try:
-    from hpx_printers import register_hpx_printers
+    if not 'hpx_printers' in dir():
+        import hpx_printers
+    else:
+        reload(hpx_printers)
 except ImportError:
-    print('Unable to import the printers module. Add the printers directory to sys.path (python sys.path.append(PATH_TO_PRINTERS_DIRECTORY))')
+    print('Unable to import the printers module. Add the printers directory to sys.path (python sys.path.append("<Path to HPX hpx-pretty-printers/python subdirectory>"))')
 
-register_hpx_printers(gdb.current_objfile())
+hpx_printers.register_hpx_printers(gdb.current_objfile())
 
