@@ -34,7 +34,7 @@ class TupleMemberPrinter(object):
             except gdb.error:
                 pass
                 
-        return "(%s) {{ %s }} %#02x" % (self.expr, txt, self.val.address)
+        return "(%s) {{ %s }}" % (self.expr, txt,)
 printer_dict['hpx::util::detail::tuple_member<(?P<tmpl>.+)>'] = TupleMemberPrinter
 
 class TuplePrinter(object):
@@ -50,7 +50,7 @@ class TuplePrinter(object):
         parts = ['%s' % gdb.parse_and_eval('(hpx::util::detail::tuple_member<%d,%s,void>&)%s' % (i, t, self.val['_impl'])) for i, t in enumerate(self.tmpl)]
         txt = ', '.join(parts)
                 
-        return "(%s) {{ %s }} %#02x" % (self.expr, txt, self.val.address)
+        return "(%s) {{ %s }}" % (self.expr, txt,)
 
     def children(self):
         result = [] 

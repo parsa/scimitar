@@ -30,6 +30,6 @@ class ThreadDescriptionPrinter(object):
         elif bool(gdb.parse_and_eval('%s == 1' % self.val['type_'])):
             txt = '[addr] {%s}' % gdb.parse_and_eval('(void*)%s' % self.val['data_']['addr_'])
                 
-        return "(%s) {{ %s }} %#02x" % (self.expr, txt, self.val.address)
+        return "(%s) {{ %s }}" % (self.expr, txt,)
 printer_dict['hpx::util::thread_description'] = ThreadDescriptionPrinter
 

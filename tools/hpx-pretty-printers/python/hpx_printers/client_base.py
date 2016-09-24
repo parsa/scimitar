@@ -30,7 +30,7 @@ class ClientBasePrinter(object):
         else:
             txt = 'empty'
                 
-        return "(%s) {{ %s }} %#02x" % (self.expr, txt, self.val.address)
+        return "(%s) {{ %s }}" % (self.expr, txt,)
 
     def children(self):
         result = [] 

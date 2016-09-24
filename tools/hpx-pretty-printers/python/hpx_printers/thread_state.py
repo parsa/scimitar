@@ -29,7 +29,7 @@ class CombinedTaggedStatePrinter(object):
             gdb.parse_and_eval('(hpx::threads::thread_state_ex_enum)((%s >> 48) & 0xff)' % self.val['state_']),
             gdb.parse_and_eval('%s & 0xffffffffffff' % self.val['state_']),
         )
-        return "(%s) {{ %s }} %#02x" % (self.expr, txt, self.val.address)
+        return "(%s) {{ %s }}" % (self.expr, txt,)
 
     def children(self):
         return [

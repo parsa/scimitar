@@ -18,19 +18,16 @@ printer_dict = {}
 printer_dict_raw = {}
 
 def get_basic_type(type_):
-    # If it points to a reference, get the reference.
-    if type_.code == gdb.TYPE_CODE_REF:
+    # Get the actual type when it points to a reference
+    if type_.code in [gdb.TYPE_CODE_REF, gdb.TYPE_CODE_PTR]:
         type_ = type_.target()
-
-    #if type_.code == gdb.TYPE_CODE_PTR:
-    #    type_ = type.dereference()
 
     # Get the unqualified type stripped of typedefs.
     type_ = type_.unqualified().strip_typedefs()
 
     return type_
 
-def lookup_printer(val):
+def pretty_printer_lookup(val):
     type_ = get_basic_type(val.type)
     expr = str(val.type)
 
@@ -71,5 +68,5 @@ def register_hpx_printers(obj=None):
     if obj == None:
         obj = gdb
 
-    obj.pretty_printers.append(lookup_printer)
+    obj.pretty_printers.append(pretty_printer_lookup)
 

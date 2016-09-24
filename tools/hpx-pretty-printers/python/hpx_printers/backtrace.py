@@ -27,7 +27,7 @@ class BacktracePrinter(object):
         txt = "{{ size=%s }}" % (
             gdb.parse_and_eval('%s' % (self.val['frames_']['_Mysize'],)),
         )
-        return "(%s) {{ %s }} %#02x" % (self.expr, txt, self.val.address)
+        return "(%s) {{ %s }}" % (self.expr, txt,)
 
     def children(self):
         result = [

@@ -20,32 +20,38 @@ class FuturePrinter(object):
         self.val = val
         self.expr = expr
         self.tmpl = tmpl
+        self.px = val['shared_state_']['px']
+        self.state_ = val['shared_state_']['px']['state_']
+        self.storage_ = val['shared_state_']['px']['storage_']
 
     def display_hint(self):
         return self.expr
 
     def to_string(self):
-        txt = '%s' % gdb.parse_and_eval('%s' % (self.val['shared_state_']['px'],))
-        return "(%s) {{ %s }} %#02x" % (self.expr, txt, self.val.address,)
+        txt = 'px: %s, state: %s' % (gdb.parse_and_eval('%s' % self.px), self.state_,)
+        return "(%s) {{ %s }}" % (self.expr, txt,)
 
     def children(self):
         result = []
-        if self.tmpltype == 'void':
-            # FIXME: Something's not right here
-            if bool(gdb.parse_and_eval('%s == 5' % (self.val['shared_state_']['px']['state_'],))):
+        if self.tmpl == 'void':
+            if bool(gdb.parse_and_eval('%d == 5' % (self.state_,))):
                 result.extend([
-                    ('value', '%s' % gdb.parse_and_eval('*((boost::exception_ptr*)&(%s))' % (self.val['shared_state_']['px']['storage_'],))),
+                    ('value', '%s' % gdb.parse_and_eval('*((boost::exception_ptr*)(%s))' % (self.storage_.address,))),
                 ])
         else:
-            if bool(gdb.parse_and_eval('%d == 3' % (self.val['shared_state_']['px']['state_'],))):
+            if bool(gdb.parse_and_eval('%d == 3' % (self.state_,))):
+                value_t = gdb.lookup_type(self.tmpl)
                 result.extend([
-                    ('value', '%s' % gdb.parse_and_eval('*(($%s *)&(%s))' % (self.tmpl[0], self.val['shared_state_']['px']['storage_'],))),
+                    ('value', '%s' % gdb.parse_and_eval('*((%s *)%s)' % (value_t.tag, self.storage_.address,))),
                 ])
-            elif bool(gdb.parse_and_eval('%d == 5' % (self.val['shared_state_']['px']['state_'],))):
+            elif bool(gdb.parse_and_eval('%d == 5' % (self.state_,))):
                 result.extend([
-                    ('value', '%s' % gdb.parse_and_eval('*((boost::exception_ptr*)&(%s))' % (self.val['shared_state_']['px']['storage_'],))),
+                    ('value', '%s' % gdb.parse_and_eval('*((boost::exception_ptr*)(%s))' % (self.storage_.address,))),
                 ])
-                
+            else:
+                result.extend([
+                    ('value', 'N/A'),
+                ])
         return result
-printer_dict['hpx::lcos::(shared_)?future<(?P<tmpl>\w*)>'] = FuturePrinter
+printer_dict['hpx::lcos::(shared_)?future<(?P<tmpl>.*)>'] = FuturePrinter
 
