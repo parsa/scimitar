@@ -59,5 +59,5 @@ class FuturePrinter(object):
                     ('value', 'N/A'),
                 ])
         return result
-printer_dict['hpx::lcos::(shared_)?future<.*>'] = FuturePrinter
+printer_dict['hpx::lcos::(shared_)?future<.+>'] = FuturePrinter
 

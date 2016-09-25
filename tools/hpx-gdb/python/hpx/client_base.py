@@ -62,5 +62,5 @@ class ClientBasePrinter(object):
             ])
                 
         return result
-printer_dict['hpx::components::client_base<(.*)>'] = ClientBasePrinter
+printer_dict['hpx::components::client_base<(.+)>'] = ClientBasePrinter
 
