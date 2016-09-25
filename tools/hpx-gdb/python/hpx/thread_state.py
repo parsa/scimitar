@@ -22,19 +22,50 @@ class CombinedTaggedStatePrinter(object):
 
     def to_string(self):
         txt = 'state=%s, stateex=%s, tag=%s' % (
-            gdb.parse_and_eval('(hpx::threads::thread_state_enum)((%s >> 56) & 0xff)' % self.state_),
-            gdb.parse_and_eval('(hpx::threads::thread_state_ex_enum)((%s >> 48) & 0xff)' % self.state_),
-            gdb.parse_and_eval('%s & 0xffffffffffff' % self.state_),
+            gdb.parse_and_eval(
+                '(hpx::threads::thread_state_enum)((%s >> 56) & 0xff)'
+                % self.state_
+            ),
+            gdb.parse_and_eval(
+                '(hpx::threads::thread_state_ex_enum)((%s >> 48) & 0xff)'
+                % self.state_
+            ),
+            gdb.parse_and_eval(
+                '%s & 0xffffffffffff'
+                % self.state_
+            ),
         )
         return "combined_tagged_state: {{ %s }}" % (txt,)
 
     def children(self):
         return [
-            ('state', str(gdb.parse_and_eval('(hpx::threads::thread_state_enum)((%s >> 56) & 0xff)' % self.state_)),),
-            ('stateex', str(gdb.parse_and_eval('(hpx::threads::thread_state_ex_enum)((%s >> 48) & 0xff)' % self.state_)),),
-            ('tag', str(gdb.parse_and_eval('%s & 0xffffffffffff' % self.state_)),),
+            (
+                'state',
+                str(gdb.parse_and_eval(
+                    '(hpx::threads::thread_state_enum)((%s >> 56) & 0xff)'
+                    % self.state_)
+                ),
+            ),
+            (
+                'stateex',
+                str(gdb.parse_and_eval(
+                    '(hpx::threads::thread_state_ex_enum)((%s >> 48) & 0xff)'
+                    % self.state_)
+                ),
+            ),
+            (
+                'tag',
+                str(gdb.parse_and_eval(
+                    '%s & 0xffffffffffff' % self.state_)
+                ),
+            ),
         ]
-printer_dict['hpx::threads::detail::combined_tagged_state<enum hpx::threads::thread_state_enum, enum hpx::threads::thread_state_ex_enum>'] = CombinedTaggedStatePrinter
+printer_dict[
+    'hpx::threads::detail::combined_tagged_state<'
+        'enum hpx::threads::thread_state_enum, '
+        'enum hpx::threads::thread_state_ex_enum '
+    '>'
+] = CombinedTaggedStatePrinter
 
 class AtomicCombinedTaggedStatePrinter(object):
     def __init__(self, val):
@@ -43,17 +74,50 @@ class AtomicCombinedTaggedStatePrinter(object):
 
     def to_string(self):
         txt = 'state=%s, stateex=%s, tag=%s' % (
-            gdb.parse_and_eval('(hpx::threads::thread_state_enum)((%s >> 56) & 0xff)' % self.m_storage),
-            gdb.parse_and_eval('(hpx::threads::thread_state_ex_enum)((%s >> 48) & 0xff)' % self.m_storage),
-            gdb.parse_and_eval('%s & 0xffffffffffff' % self.m_storage),
+            gdb.parse_and_eval(
+                '(hpx::threads::thread_state_enum)((%s >> 56) & 0xff)'
+                % self.m_storage
+            ),
+            gdb.parse_and_eval(
+                '(hpx::threads::thread_state_ex_enum)((%s >> 48) & 0xff)'
+                % self.m_storage
+            ),
+            gdb.parse_and_eval(
+                '%s & 0xffffffffffff' % self.m_storage
+            ),
         )
-        return "atomic<combined_tagged_state>: {{ %s }} %#02x" % (txt, self.val.address)
+        return  \
+            "atomic<combined_tagged_state>: {{ %s }} %#02x" \
+            % (txt, self.val.address)
 
     def children(self):
         return [
-            ('state', str(gdb.parse_and_eval('(hpx::threads::thread_state_enum)((%s >> 56) & 0xff)' % self.m_storage)),),
-            ('stateex', str(gdb.parse_and_eval('(hpx::threads::thread_state_ex_enum)((%s >> 48) & 0xff)' % self.m_storage)),),
-            ('tag', str(gdb.parse_and_eval('%s & 0xffffffffffff' % self.m_storage)),),
+            (
+                'state',
+                str(gdb.parse_and_eval(
+                    '(hpx::threads::thread_state_enum)((%s >> 56) & 0xff)'
+                    % self.m_storage)
+                ),
+            ),
+            (
+                'stateex',
+                str(gdb.parse_and_eval(
+                    '(hpx::threads::thread_state_ex_enum)((%s >> 48) & 0xff)'
+                    % self.m_storage)
+                ),
+            ),
+            (
+                'tag',
+                str(gdb.parse_and_eval(
+                    '%s & 0xffffffffffff' % self.m_storage)
+                ),
+            ),
         ]
-printer_dict['boost::atomics::atomic<hpx::threads::detail::combined_tagged_state<enum hpx::threads::thread_state_enum, enum hpx::threads::thread_state_ex_enum>>'] = AtomicCombinedTaggedStatePrinter
+printer_dict[
+    'boost::atomics::atomic<'
+        'hpx::threads::detail::combined_tagged_state<'
+            'enum hpx::threads::thread_state_enum, '
+            'enum hpx::threads::thread_state_ex_enum'
+    '>>'
+] = AtomicCombinedTaggedStatePrinter
 

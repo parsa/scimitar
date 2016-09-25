@@ -17,16 +17,18 @@ import backtrace, client_base, future, gid_type, thread_description, thread_stat
 
 def build_pretty_printers():
     printer_dict = {}
-    include_dicts = lambda m: printer_dict.update(m.printer_dict)
+    # Shorthand for adding a dictionary to printer_dict
+    inc_dict = lambda m: printer_dict.update(m.printer_dict)
+    # Combine all dictionaries
+    inc_dict(backtrace)
+    inc_dict(client_base)
+    inc_dict(future)
+    inc_dict(gid_type)
+    inc_dict(thread_description)
+    inc_dict(thread_state)
+    inc_dict(tuple_)
 
-    include_dicts(backtrace)
-    include_dicts(client_base)
-    include_dicts(future)
-    include_dicts(gid_type)
-    include_dicts(thread_description)
-    include_dicts(thread_state)
-    include_dicts(tuple_)
-
+    # Introduce the types to GDB
     pp = gdb.printing.RegexpCollectionPrettyPrinter("hpx")
 
     for k, v in printer_dict.iteritems():

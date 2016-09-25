@@ -29,9 +29,13 @@ class ThreadDescriptionPrinter(object):
     def to_string(self):
         txt = ''
         if self.cond_1:
-            txt = '[desc] {%s}' % gdb.parse_and_eval('%s' % self.val['data_']['desc_'])
+            txt = '[desc] {%s}' % gdb.parse_and_eval(
+                '%s' % self.val['data_']['desc_']
+            )
         elif self.cond_2:
-            txt = '[addr] {%s}' % gdb.parse_and_eval('(void*)%s' % self.val['data_']['addr_'])
+            txt = '[addr] {%s}' % gdb.parse_and_eval(
+                '(void*)%s' % self.val['data_']['addr_']
+            )
                 
         return "thread_description {{ %s }}" % (txt,)
 printer_dict['hpx::util::thread_description'] = ThreadDescriptionPrinter

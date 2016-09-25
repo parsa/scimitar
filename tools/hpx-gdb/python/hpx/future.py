@@ -42,17 +42,33 @@ class FuturePrinter(object):
         if self.cond_1:
             if self.cond_2:
                 result.extend([
-                    ('value', '%s' % gdb.parse_and_eval('*((boost::exception_ptr*)(%s))' % (self.storage_.address,))),
+                    (
+                        'value',
+                        '%s' % gdb.parse_and_eval(
+                            '*((boost::exception_ptr*)(%s))'
+                            % (self.storage_.address,)
+                        ),
+                    ),
                 ])
         else:
             if self.cond_3:
                 value_t = gdb.lookup_type(self.tmpl)
                 result.extend([
-                    ('value', '%s' % gdb.parse_and_eval('*((%s *)%s)' % (value_t.tag, self.storage_.address,))),
+                    (
+                        'value',
+                        str(gdb.parse_and_eval('*((%s *)%s)'
+                        % (value_t.tag, self.storage_.address,))),
+                    ),
                 ])
             elif self.cond_2:
                 result.extend([
-                    ('value', '%s' % gdb.parse_and_eval('*((boost::exception_ptr*)(%s))' % (self.storage_.address,))),
+                    (
+                        'value',
+                        '%s' % gdb.parse_and_eval(
+                            '*((boost::exception_ptr*)(%s))'
+                            % (self.storage_.address,)
+                        )
+                    ),
                 ])
             else:
                 result.extend([

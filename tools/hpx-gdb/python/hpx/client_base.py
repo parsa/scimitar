@@ -51,11 +51,19 @@ class ClientBasePrinter(object):
         if self.cond_1:
             if self.cond_2:
                 result.extend([
-                    ('value', str(gdb.parse_and_eval('*((hpx::naming::id_type*)(%s))' % (self.buf,))),),
+                    ('value',
+                        str(gdb.parse_and_eval(
+                            '*((hpx::naming::id_type*)(%s))' % (self.buf,)
+                        )),
+                    ),
                 ])
             elif self.cond_3:
                 result.extend([
-                    ('exception', str(gdb.parse_and_eval('*((boost::exception_ptr*)(%s))' % (self.buf,))),),
+                    ('exception',
+                        str(gdb.parse_and_eval(
+                            '*((boost::exception_ptr*)(%s))' % (self.buf,)
+                        )),
+                    ),
                 ])
             result.extend([
                 ('count', str(gdb.parse_and_eval(str(self.px['count_']))),),
