@@ -16,20 +16,23 @@ import gdb
 printer_dict = {}
 
 class ThreadDescriptionPrinter(object):
-    def __init__(self, expr, val):
+    def __init__(self, val):
         self.val = val
-        self.expr = expr
 
-    def display_hint(self):
-        return self.expr
+        self.cond_1 = True
+        self.cond_2 = True
+        if bool(gdb.parse_and_eval('%s == 0' % self.val['type_'])):
+            self.cond_1 = True
+        elif bool(gdb.parse_and_eval('%s == 1' % self.val['type_'])):
+            self.cond_2 = True
 
     def to_string(self):
         txt = ''
-        if bool(gdb.parse_and_eval('%s == 0' % self.val['type_'])):
+        if self.cond_1:
             txt = '[desc] {%s}' % gdb.parse_and_eval('%s' % self.val['data_']['desc_'])
-        elif bool(gdb.parse_and_eval('%s == 1' % self.val['type_'])):
+        elif self.cond_2:
             txt = '[addr] {%s}' % gdb.parse_and_eval('(void*)%s' % self.val['data_']['addr_'])
                 
-        return "(%s) {{ %s }}" % (self.expr, txt,)
+        return "thread_description {{ %s }}" % (txt,)
 printer_dict['hpx::util::thread_description'] = ThreadDescriptionPrinter
 

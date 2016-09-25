@@ -16,25 +16,27 @@ import gdb
 printer_dict = {}
 
 class BacktracePrinter(object):
-    def __init__(self, expr, val):
+    def __init__(self, val):
         self.val = val
-        self.expr = expr
-
-    def display_hint(self):
-        return self.expr
+        self.frames_ = self.val['frames_']
+        self._Myfirst = self.frames_['_Myfirst']
+        self._Mysize = self.frames_['_Mysize']
+        self.stackTrace = self.val['stackTrace']
 
     def to_string(self):
         txt = "{{ size=%s }}" % (
-            gdb.parse_and_eval('%s' % (self.val['frames_']['_Mysize'],)),
+            self.frames_['_Mysize'],
         )
-        return "(%s) {{ %s }}" % (self.expr, txt,)
+        return "backtrace: {{ %s }}" % (txt,)
 
     def children(self):
         result = [
-            ('stacktrace', '%s,[%s]%s' % (
-                gdb.parse_and_eval('%s' % (self.val['frames_']['_Myfirst'],)),
-                gdb.parse_and_eval('%s' % (self.val['frames_']['_Mysize'],)),
-                gdb.parse_and_eval('%s' % (self.val['stackTrace'],)))
+            ('stacktrace',
+                '%s,[%s]%s' % (
+                    str(self._Myfirst),
+                    str(self._Mysize),
+                    str(self.stackTrace),
+                ),
             ),
         ]
                 

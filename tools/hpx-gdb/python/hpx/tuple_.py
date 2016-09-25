@@ -16,49 +16,52 @@ import gdb
 printer_dict = {}
 
 class TupleMemberPrinter(object):
-    def __init__(self, expr, val, tmpl):
+    def __init__(self, val):
         self.val = val
-        self.expr = expr
-        self.tmpl = [t.strip() for t in tmpl.split(',')]
-
-    def display_hint(self):
-        return self.expr
+        self.tmpl = []
+        for i in range(10):
+            try:
+                self.tmpl.append(str(self.val.type.template_argument(i)))
+            except RuntimeError:
+                break
 
     def to_string(self):
         txt = ''
         try:
-            txt = '%s' % gdb.parse_and_eval('%s' % self.val['_value'])
+            txt = str(self.val['_value'])
         except gdb.error:
             try:
                 txt = '%s' % gdb.parse_and_eval('*(%s *)%s' % (self.tmpl[1], self.val))
             except gdb.error:
                 pass
                 
-        return "(%s) {{ %s }}" % (self.expr, txt,)
-printer_dict['hpx::util::detail::tuple_member<(?P<tmpl>.+)>'] = TupleMemberPrinter
+        return "tuple_member: {{ %s }}" % (self.txt,)
+printer_dict['hpx::util::detail::tuple_member<.+>'] = TupleMemberPrinter
 
 class TuplePrinter(object):
-    def __init__(self, expr, val, tmpl):
+    def __init__(self, val):
         self.val = val
-        self.expr = expr
-        self.tmpl = [t.strip() for t in tmpl.split(',')]
-
-    def display_hint(self):
-        return self.expr
+        self._imp = self.val['_impl']
+        self.tmpl = []
+        for i in range(10):
+            try:
+                self.tmpl.append(str(self.val.type.template_argument(i)))
+            except RuntimeError:
+                break
 
     def to_string(self):
-        parts = ['%s' % gdb.parse_and_eval('(hpx::util::detail::tuple_member<%d,%s,void>&)%s' % (i, t, self.val['_impl'])) for i, t in enumerate(self.tmpl)]
+        parts = ['%s' % gdb.parse_and_eval('(hpx::util::detail::tuple_member<%d,%s,void>&)%s' % (i, t, self._impl)) for i, t in enumerate(self.tmpl)]
         txt = ', '.join(parts)
                 
-        return "(%s) {{ %s }}" % (self.expr, txt,)
+        return "tuple {{ %s }}" % (txt,)
 
     def children(self):
         result = [] 
         for i, t in enumerate(self.tmpl):
             result.extend([
-                ('%d' % i, '%s' % gdb.parse_and_eval('(hpx::util::detail::tuple_member<%d,%s,void>&)%s' % (i, t, self.val['_impl']))),
+                ('%d' % i, '%s' % gdb.parse_and_eval('(hpx::util::detail::tuple_member<%d,%s,void>&)%s' % (i, t, self._impl))),
             ])
                 
         return result
-printer_dict['hpx::util::tuple<(?P<tmpl>.+)>'] = TuplePrinter
+printer_dict['hpx::util::tuple<.+>'] = TuplePrinter
 

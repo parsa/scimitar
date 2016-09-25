@@ -32,14 +32,8 @@ def pretty_printer_lookup(val):
     expr = str(val.type)
 
     for k, v in printer_dict.iteritems():
-        m = k.match(expr)
-        if m:
-            try:
-                tmpl = m.group('tmpl')
-                if tmpl:
-                    return v(expr, val, tmpl)
-            except IndexError:
-                return v(expr, val)
+        if k.match(expr):
+            return v(val)
     return None
 
 def build_printer_dict():

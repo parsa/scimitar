@@ -16,35 +16,41 @@ import gdb
 printer_dict = {}
 
 class FuturePrinter(object):
-    def __init__(self, expr, val, tmpl):
+    def __init__(self, val):
         self.val = val
-        self.expr = expr
-        self.tmpl = tmpl
-        self.px = val['shared_state_']['px']
-        self.state_ = val['shared_state_']['px']['state_']
-        self.storage_ = val['shared_state_']['px']['storage_']
+        self.tmpl = str(self.val.type.template_argument(0))
+        self.px = self.val['shared_state_']['px']
+        self.state_ = self.px['state_']
+        self.storage_ = self.px['storage_']
 
-    def display_hint(self):
-        return self.expr
+        self.cond_1 = False
+        self.cond_2 = False
+        self.cond_3 = False
+        if self.tmpl == 'void':
+            self.cond_1 = True
+        if bool(gdb.parse_and_eval('%d == 5' % (self.state_,))):
+            self.cond_2 = True
+        if bool(gdb.parse_and_eval('%d == 3' % (self.state_,))):
+            self.cond_3 = True
 
     def to_string(self):
-        txt = 'px: %s, state: %s' % (gdb.parse_and_eval('%s' % self.px), self.state_,)
-        return "(%s) {{ %s }}" % (self.expr, txt,)
+        txt = 'px: %s, state: %s' % (self.px, self.state_,)
+        return "future: {{ %s }}" % (txt,)
 
     def children(self):
         result = []
-        if self.tmpl == 'void':
-            if bool(gdb.parse_and_eval('%d == 5' % (self.state_,))):
+        if self.cond_1:
+            if self.cond_2:
                 result.extend([
                     ('value', '%s' % gdb.parse_and_eval('*((boost::exception_ptr*)(%s))' % (self.storage_.address,))),
                 ])
         else:
-            if bool(gdb.parse_and_eval('%d == 3' % (self.state_,))):
+            if self.cond_3:
                 value_t = gdb.lookup_type(self.tmpl)
                 result.extend([
                     ('value', '%s' % gdb.parse_and_eval('*((%s *)%s)' % (value_t.tag, self.storage_.address,))),
                 ])
-            elif bool(gdb.parse_and_eval('%d == 5' % (self.state_,))):
+            elif self.cond_2:
                 result.extend([
                     ('value', '%s' % gdb.parse_and_eval('*((boost::exception_ptr*)(%s))' % (self.storage_.address,))),
                 ])
@@ -53,5 +59,5 @@ class FuturePrinter(object):
                     ('value', 'N/A'),
                 ])
         return result
-printer_dict['hpx::lcos::(shared_)?future<(?P<tmpl>.*)>'] = FuturePrinter
+printer_dict['hpx::lcos::(shared_)?future<.*>'] = FuturePrinter
 
