@@ -13,13 +13,11 @@
 '''
 import gdb
 import gdb.printing
+import backtrace, client_base, future, gid_type, thread_description, thread_state, tuple_
 
 def build_pretty_printers():
     printer_dict = {}
-
     include_dicts = lambda m: printer_dict.update(m.printer_dict)
-
-    import backtrace, client_base, future, gid_type, thread_description, thread_state, tuple_
 
     include_dicts(backtrace)
     include_dicts(client_base)
@@ -32,7 +30,6 @@ def build_pretty_printers():
     pp = gdb.printing.RegexpCollectionPrettyPrinter("hpx")
 
     for k, v in printer_dict.iteritems():
-
         pattern = '^%s$' % k
         pp.add_printer(k, pattern, v)
 
