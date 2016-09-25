@@ -30,3 +30,15 @@ gdb.printing.register_pretty_printer(
     gdb.current_objfile(),
     hpx.build_pretty_printers())
 
+try:
+    n = hpx.threads.hpx_threads_available
+    gdb.write(
+        'HPX Threading helper cannot be loaded. Please run hpx_threads.py to '
+        'download the script from HPX\'s repository.\n',
+        gdb.STDERR
+    )
+    gdb.flush(gdb.STDERR)
+except NameError:
+    gdb.execute('define hook-continue')
+    gdb.execute('hpx thread restore')
+    gdb.execute('end')

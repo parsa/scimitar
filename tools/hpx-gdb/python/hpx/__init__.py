@@ -13,6 +13,7 @@
 '''
 import gdb
 import gdb.printing
+import hpx_threads as threads
 from hpx.printers import *
 
 def build_pretty_printers():

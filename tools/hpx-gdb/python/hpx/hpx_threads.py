@@ -13,13 +13,19 @@
     file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 '''
 
-import os
-import urllib2
+hpx_threads_available = False
 
-url = 'https://raw.githubusercontent.com/STEllAR-GROUP/hpx/master/tools/gdb/hpx.py'
-response = urllib2.urlopen(url)
-code = response.read()
+def main():
+    import os
+    import urllib2
 
-with open('threads.py', 'wb') as file:
-    file.write(code)
-#os.system('bash threads.py')
+    url = 'https://raw.githubusercontent.com/STEllAR-GROUP/hpx/master/tools/gdb/hpx.py'
+    response = urllib2.urlopen(url)
+    code = response.read()
+
+    with open('hpx_threads.py', 'wb') as file:
+        file.write(code)
+    #os.system('bash threads.py')
+
+if __name__ == '__main__':
+    main()
