@@ -13,7 +13,7 @@
 '''
 import gdb
 import gdb.printing
-from hpx.printers import backtrace, client_base, future, gid_type, thread_description, thread_state, tuple_
+from hpx.printers import *
 
 def build_pretty_printers():
     printer_dict = {}
