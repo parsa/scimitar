@@ -56,14 +56,14 @@ class ClientBasePrinter(object):
         if self.is_px_null:
             if self.is_value:
                 result.extend([
-                    ( 'value', str(self.value) ),
+                    ( 'value', '%s' % (self.value) ),
                 ])
             elif self.is_exception:
                 result.extend([
-                    ( 'exception', str(self.exception) ),
+                    ( 'exception', '%s' % (self.exception) ),
                 ])
             result.extend([
-                ( 'count', str(self.count_) ),
+                ( 'count', '%s' % (self.count_) ),
             ])
                 
         return result
