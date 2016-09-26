@@ -23,12 +23,12 @@ class ClientBasePrinter(object):
         # Values
         self.shared_state_ = self.val['shared_state_']
         self.px = self.shared_state_['px']
+        self.state_ = self.px['state_']
         # Conditions
         self.cond_1 = bool(_eval_('%s != 0' % self.px))
         self.cond_2 = bool(_eval_('%s == 3' % self.state_))
         self.cond_3 = bool(_eval_('%d == 5' % self.state_))
         if self.cond_1:
-            self.state_ = self.px['state_']
             self.count_ = self.px['count_']
 
             if self.cond_2:
