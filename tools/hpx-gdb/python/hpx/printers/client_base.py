@@ -25,26 +25,26 @@ class ClientBasePrinter(object):
         self.px = self.shared_state_['px']
         self.state_ = self.px['state_']
         # Conditions
-        self.cond_1 = bool(_eval_('%s != 0' % self.px))
-        self.cond_2 = bool(_eval_('%s == 3' % self.state_))
-        self.cond_3 = bool(_eval_('%d == 5' % self.state_))
-        if self.cond_1:
+        self.is_px_null = bool(_eval_('%s != 0' % self.px))
+        self.is_value = bool(_eval_('%s == 3' % self.state_))
+        self.is_exception = bool(_eval_('%d == 5' % self.state_))
+        if self.is_px_null:
             self.count_ = self.px['count_']
 
-            if self.cond_2:
-                self.buf = self.px['storage_']['data_']['buf']
+            if self.is_value:
+                self.buf = self.px['storage_']['__data']
                 self.value = _eval_(
                     '*((hpx::naming::id_type*)(%s))' % (self.buf,)
                 )
-            if self.cond_3:
-                self.buf = self.px['storage_']['data_']['buf']
+            if self.is_exception:
+                self.buf = self.px['storage_']['__data']
                 self.exception = _eval_(
                     '*((boost::exception_ptr*)(%s))' % (self.buf,)
                 )
 
     def to_string(self):
         txt = ''
-        if self.cond_1:
+        if self.is_px_null:
             txt = str(self.state_)
         else:
             txt = 'empty'
@@ -53,12 +53,12 @@ class ClientBasePrinter(object):
 
     def children(self):
         result = [] 
-        if self.cond_1:
-            if self.cond_2:
+        if self.is_px_null:
+            if self.is_value:
                 result.extend([
                     ( 'value', str(self.value) ),
                 ])
-            elif self.cond_3:
+            elif self.is_exception:
                 result.extend([
                     ( 'exception', str(self.exception) ),
                 ])
