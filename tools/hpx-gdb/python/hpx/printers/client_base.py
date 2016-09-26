@@ -33,14 +33,14 @@ class ClientBasePrinter(object):
 
             if self.is_value:
                 self.buf = self.px['storage_']['__data']
-                self.value = _eval_(
-                    '*((hpx::naming::id_type*)(%s))' % (self.buf,)
-                )
+                T_id_type = gdb.lookup_type('hpx::naming::id_type')
+                self.value = self.buf.cast(T_id_type)
+            print('ping')
             if self.is_exception:
                 self.buf = self.px['storage_']['__data']
-                self.exception = _eval_(
-                    '*((boost::exception_ptr*)(%s))' % (self.buf,)
-                )
+                T_exception_ptr = gdb.lookup_type('boost::exception_ptr')
+                self.exception = self.buf.cast(T_exception_ptr)
+            print('unping')
 
     def to_string(self):
         txt = ''
@@ -56,14 +56,14 @@ class ClientBasePrinter(object):
         if self.is_px_null:
             if self.is_value:
                 result.extend([
-                    ( 'value', '%s' % (self.value) ),
+                    ( 'value', str(self.value) ),
                 ])
             elif self.is_exception:
                 result.extend([
-                    ( 'exception', '%s' % (self.exception) ),
+                    ( 'exception', str(self.exception) ),
                 ])
             result.extend([
-                ( 'count', '%s' % (self.count_) ),
+                ( 'count', str(self.count_) ),
             ])
                 
         return result
