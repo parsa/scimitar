@@ -13,29 +13,28 @@
 '''
 import gdb
 
+_eval_ = gdb.parse_and_eval
+
 printer_dict = {}
 
 class ThreadDescriptionPrinter(object):
     def __init__(self, val):
         self.val = val
-
-        self.cond_1 = True
-        self.cond_2 = True
-        if bool(gdb.parse_and_eval('%s == 0' % self.val['type_'])):
-            self.cond_1 = True
-        elif bool(gdb.parse_and_eval('%s == 1' % self.val['type_'])):
-            self.cond_2 = True
+        # Values
+        self.type_ = self.val['type_']
+        self.data_ = self.val['data_']
+        self.desc_ = self.data_['desc_']
+        self.addr_ = self.data_['addr_']
+        # Conditions
+        self.is_type_0 = bool(_eval_('%s == 0' % self.type_))
+        self.is_type_1 = bool(_eval_('%s == 1' % self.type_))
 
     def to_string(self):
         txt = ''
-        if self.cond_1:
-            txt = '[desc] {%s}' % gdb.parse_and_eval(
-                '%s' % self.val['data_']['desc_']
-            )
-        elif self.cond_2:
-            txt = '[addr] {%s}' % gdb.parse_and_eval(
-                '(void*)%s' % self.val['data_']['addr_']
-            )
+        if self.is_type_0:
+            txt = '[desc] {%s}' % self.desc_
+        elif self.is_type_1:
+            txt = '[addr] {%s}' % _eval_('(void*)%s' % self.addr_)
                 
         return "thread_description {{ %s }}" % (txt,)
 printer_dict['hpx::util::thread_description'] = ThreadDescriptionPrinter

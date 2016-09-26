@@ -13,27 +13,34 @@
 '''
 import gdb
 
+_eval_ = gdb.parse_and_eval
+
 printer_dict = {}
 
 class ClientBasePrinter(object):
     def __init__(self, val):
         self.val = val
+        # Values
         self.shared_state_ = self.val['shared_state_']
         self.px = self.shared_state_['px']
-
-        self.cond_1 = False
-        self.cond_2 = False
-        self.cond_3 = False
-        if bool(gdb.parse_and_eval('%s != 0' % self.px)):
-            self.cond_1 = True
+        # Conditions
+        self.cond_1 = bool(_eval_('%s != 0' % self.px))
+        self.cond_2 = bool(_eval_('%s == 3' % (self.state_,)))
+        self.cond_3 = bool(_eval_('%d == 5' % self.state_))
+        if self.cond_1:
             self.state_ = self.px['state_']
+            self.count_ = self.px['count_']
 
-            if bool(gdb.parse_and_eval('%s == 3' % (self.state_,))):
-                self.cond_2 = True
+            if self.cond_2:
                 self.buf = self.px['storage_']['data_']['buf']
-            elif bool(gdb.parse_and_eval('%d == 5' % self.state_)):
-                self.cond_3 = True
+                self.value = _eval_(
+                    '*((hpx::naming::id_type*)(%s))' % (self.buf,)
+                )
+            if self.cond_3:
                 self.buf = self.px['storage_']['data_']['buf']
+                self.exception = _eval_(
+                    '*((boost::exception_ptr*)(%s))' % (self.buf,)
+                )
 
     def to_string(self):
         txt = ''
@@ -42,31 +49,21 @@ class ClientBasePrinter(object):
         else:
             txt = 'empty'
                 
-        return "client_base: {{ %s }}" % (
-            txt,
-        )
+        return "client_base: {{ %s }}" % ( txt, )
 
     def children(self):
         result = [] 
         if self.cond_1:
             if self.cond_2:
                 result.extend([
-                    ('value',
-                        str(gdb.parse_and_eval(
-                            '*((hpx::naming::id_type*)(%s))' % (self.buf,)
-                        )),
-                    ),
+                    ( 'value', str(self.value) ),
                 ])
             elif self.cond_3:
                 result.extend([
-                    ('exception',
-                        str(gdb.parse_and_eval(
-                            '*((boost::exception_ptr*)(%s))' % (self.buf,)
-                        )),
-                    ),
+                    ( 'exception', str(self.exception) ),
                 ])
             result.extend([
-                ('count', str(gdb.parse_and_eval(str(self.px['count_']))),),
+                ( 'count', str(self.count_) ),
             ])
                 
         return result

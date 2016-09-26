@@ -13,52 +13,38 @@
 '''
 import gdb
 
+_eval_ = gdb.parse_and_eval
+
 printer_dict = {}
 
 class CombinedTaggedStatePrinter(object):
     def __init__(self, val):
         self.val = val
+        # Values
         self.state_ = self.val['state_']
+        self.state = _eval_(
+            '(hpx::threads::thread_state_enum)((%s >> 56) & 0xff)'
+            % self.state_
+        )
+        self.state_ex = _eval_(
+            '(hpx::threads::thread_state_ex_enum)((%s >> 48) & 0xff)'
+            % self.state_
+        )
+        self.tag = _eval_('%s & 0xffffffffffff' % self.state_)
 
     def to_string(self):
-        txt = 'state=%s, stateex=%s, tag=%s' % (
-            gdb.parse_and_eval(
-                '(hpx::threads::thread_state_enum)((%s >> 56) & 0xff)'
-                % self.state_
-            ),
-            gdb.parse_and_eval(
-                '(hpx::threads::thread_state_ex_enum)((%s >> 48) & 0xff)'
-                % self.state_
-            ),
-            gdb.parse_and_eval(
-                '%s & 0xffffffffffff'
-                % self.state_
-            ),
+        txt = 'state=%s, state_ex=%s, tag=%s' % (
+            self.state,
+            self.state_ex,
+            self.tag,
         )
         return "combined_tagged_state: {{ %s }}" % (txt,)
 
     def children(self):
         return [
-            (
-                'state',
-                str(gdb.parse_and_eval(
-                    '(hpx::threads::thread_state_enum)((%s >> 56) & 0xff)'
-                    % self.state_)
-                ),
-            ),
-            (
-                'stateex',
-                str(gdb.parse_and_eval(
-                    '(hpx::threads::thread_state_ex_enum)((%s >> 48) & 0xff)'
-                    % self.state_)
-                ),
-            ),
-            (
-                'tag',
-                str(gdb.parse_and_eval(
-                    '%s & 0xffffffffffff' % self.state_)
-                ),
-            ),
+            ( 'state'   , str(self.state)     ),
+            ( 'state_ex', str(self.state_ex) ),
+            ( 'tag'     , str(self.tag)       ),
         ]
 printer_dict[
     'hpx::threads::detail::combined_tagged_state<'
@@ -70,21 +56,23 @@ printer_dict[
 class AtomicCombinedTaggedStatePrinter(object):
     def __init__(self, val):
         self.val = val
+        # Values
         self.m_storage = self.val['m_storage']
+        self.state = _eval_(
+            '(hpx::threads::thread_state_enum)((%s >> 56) & 0xff)'
+            % self.m_storage
+        )
+        self.state_ex = _eval_(
+            '(hpx::threads::thread_state_ex_enum)((%s >> 48) & 0xff)'
+            % self.m_storage
+        )
+        self.tag = _eval_('%s & 0xffffffffffff' % self.m_storage)
 
     def to_string(self):
-        txt = 'state=%s, stateex=%s, tag=%s' % (
-            gdb.parse_and_eval(
-                '(hpx::threads::thread_state_enum)((%s >> 56) & 0xff)'
-                % self.m_storage
-            ),
-            gdb.parse_and_eval(
-                '(hpx::threads::thread_state_ex_enum)((%s >> 48) & 0xff)'
-                % self.m_storage
-            ),
-            gdb.parse_and_eval(
-                '%s & 0xffffffffffff' % self.m_storage
-            ),
+        txt = 'state=%s, state_ex=%s, tag=%s' % (
+            self.state,
+            self.state_ex,
+            self.tag,
         )
         return  \
             "atomic<combined_tagged_state>: {{ %s }} %#02x" \
@@ -92,26 +80,9 @@ class AtomicCombinedTaggedStatePrinter(object):
 
     def children(self):
         return [
-            (
-                'state',
-                str(gdb.parse_and_eval(
-                    '(hpx::threads::thread_state_enum)((%s >> 56) & 0xff)'
-                    % self.m_storage)
-                ),
-            ),
-            (
-                'stateex',
-                str(gdb.parse_and_eval(
-                    '(hpx::threads::thread_state_ex_enum)((%s >> 48) & 0xff)'
-                    % self.m_storage)
-                ),
-            ),
-            (
-                'tag',
-                str(gdb.parse_and_eval(
-                    '%s & 0xffffffffffff' % self.m_storage)
-                ),
-            ),
+            ( 'state'   , str(self.state)    ),
+            ( 'state_ex', str(self.state_ex) ),
+            ( 'tag'     , str(self.tag)      ),
         ]
 printer_dict[
     'boost::atomics::atomic<'

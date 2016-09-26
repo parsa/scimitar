@@ -13,16 +13,17 @@
 '''
 import gdb
 
-printer_dict = {}
-
 _eval_ = gdb.parse_and_eval
+
+printer_dict = {}
 
 class GidTypePrinter(object):
     def __init__(self, val):
         self.val = val
+        # Values
         self.id_msb_ = self.val['id_msb_']
         self.id_lsb_ = self.val['id_lsb_']
-
+        # Conditions
         self.cond_1 = bool(_eval_(
             '(%d & 0x40000000ull) != 0' % (self.id_msb_,))
         )
@@ -90,13 +91,13 @@ printer_dict['hpx::naming::gid_type'] = GidTypePrinter
 class IdTypePrinter(object):
     def __init__(self, val):
         self.val = val
-
+        # Values
         self.px        = val['gid_']['px']
         self.id_msb_   = self.px['id_msb_']
         self.id_lsb_   = self.px['id_lsb_']
         self.type_     = self.px['type_']
         self.m_storage = self.px['count_']['value_']['m_storage']
-
+        # Conditions
         self.is_px_null = bool(_eval_('%d != 0' % (self.px,)))
         self.is_not_unmanaged = bool(_eval_(
                 '(%s != hpx::naming::id_type::unmanaged) != 0' % (self.type_,))

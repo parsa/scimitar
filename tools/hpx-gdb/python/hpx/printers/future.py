@@ -13,62 +13,62 @@
 '''
 import gdb
 
+_eval_ = gdb.parse_and_eval
+
 printer_dict = {}
 
 class FuturePrinter(object):
     def __init__(self, val):
         self.val = val
-        self.tmpl = str(self.val.type.template_argument(0))
+        # Values
         self.px = self.val['shared_state_']['px']
         self.state_ = self.px['state_']
         self.storage_ = self.px['storage_']
-
-        self.cond_1 = False
-        self.cond_2 = False
-        self.cond_3 = False
-        if self.tmpl == 'void':
-            self.cond_1 = True
-        if bool(gdb.parse_and_eval('%d == 5' % (self.state_,))):
-            self.cond_2 = True
-        if bool(gdb.parse_and_eval('%d == 3' % (self.state_,))):
-            self.cond_3 = True
+        # Template type
+        self.tmpl = str(self.val.type.template_argument(0))
+        # Conditions
+        self.is_void = self.tmpl == 'void'
+        self.is_state_5 = bool(_eval_('%d == 5' % (self.state_,)))
+        self.is_state_3 = bool(_eval_('%d == 3' % (self.state_,)))
+        
+        if self.is_void:
+            if self.is_state_5:
+                self.value = _eval_(
+                    '*((boost::exception_ptr*)(%s))'
+                    % (self.storage_.address,)
+                )
+        else:
+            if self.is_state_3:
+                self.value = _eval_(
+                    '*((%s *)%s)' % (value_t.tag, self.storage_.address,)
+                )
+            if self.is_state_5:
+                self.value = _eval_(
+                    '*((boost::exception_ptr*)(%s))'
+                    % (self.storage_.address,)
+                )
+                
 
     def to_string(self):
-        txt = 'px: %s, state: %s' % (self.px, self.state_,)
-        return "future: {{ %s }}" % (txt,)
+        txt = 'px: %s, state: %s' % ( self.px, self.state_, )
+        return "future: {{ %s }}" % ( txt, )
 
     def children(self):
         result = []
-        if self.cond_1:
-            if self.cond_2:
+        if self.is_void:
+            if self.is_state_5:
                 result.extend([
-                    (
-                        'value',
-                        '%s' % gdb.parse_and_eval(
-                            '*((boost::exception_ptr*)(%s))'
-                            % (self.storage_.address,)
-                        ),
-                    ),
+                    ( 'value', str(self.value) ),
                 ])
         else:
-            if self.cond_3:
+            if self.is_state_3:
                 value_t = gdb.lookup_type(self.tmpl)
                 result.extend([
-                    (
-                        'value',
-                        str(gdb.parse_and_eval('*((%s *)%s)'
-                        % (value_t.tag, self.storage_.address,))),
-                    ),
+                    ( 'value', str(self.value) ),
                 ])
-            elif self.cond_2:
+            elif self.is_state_5:
                 result.extend([
-                    (
-                        'value',
-                        '%s' % gdb.parse_and_eval(
-                            '*((boost::exception_ptr*)(%s))'
-                            % (self.storage_.address,)
-                        )
-                    ),
+                    ( 'value', self.value ),
                 ])
             else:
                 result.extend([

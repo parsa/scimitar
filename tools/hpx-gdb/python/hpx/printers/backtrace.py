@@ -18,6 +18,7 @@ printer_dict = {}
 class BacktracePrinter(object):
     def __init__(self, val):
         self.val = val
+
         self.frames_ = self.val['frames_']
         self._Myfirst = self.frames_['_Myfirst']
         self._Mysize = self.frames_['_Mysize']
@@ -33,9 +34,9 @@ class BacktracePrinter(object):
         result = [
             ('stacktrace',
                 '%s,[%s]%s' % (
-                    str(self._Myfirst),
-                    str(self._Mysize),
-                    str(self.stackTrace),
+                    self._Myfirst,
+                    self._Mysize,
+                    self.stackTrace,
                 ),
             ),
         ]

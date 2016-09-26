@@ -13,11 +13,14 @@
 '''
 import gdb
 
+_eval_ = gdb.parse_and_eval
+
 printer_dict = {}
 
 class TupleMemberPrinter(object):
     def __init__(self, val):
         self.val = val
+        # Get the template types
         self.tmpl = []
         for i in range(10):
             try:
@@ -31,9 +34,7 @@ class TupleMemberPrinter(object):
             txt = str(self.val['_value'])
         except gdb.error:
             try:
-                txt = '%s' % gdb.parse_and_eval(
-                    '*(%s *)%s' % (self.tmpl[1], self.val)
-                )
+                txt = '%s' % _eval_('*(%s *)%s' % (self.tmpl[1], self.val))
             except gdb.error:
                 pass
                 
@@ -43,7 +44,9 @@ printer_dict['hpx::util::detail::tuple_member<.+>'] = TupleMemberPrinter
 class TuplePrinter(object):
     def __init__(self, val):
         self.val = val
+        # Values
         self._imp = self.val['_impl']
+        # Get the template types
         self.tmpl = []
         for i in range(10):
             try:
@@ -54,7 +57,7 @@ class TuplePrinter(object):
     def to_string(self):
         parts = [
             '%s'
-            % gdb.parse_and_eval(
+            % _eval_(
                 '(hpx::util::detail::tuple_member<%d,%s,void>&)%s'
                 % (i, t, self._impl)
             ) for i, t in enumerate(self.tmpl)
@@ -69,7 +72,7 @@ class TuplePrinter(object):
             result.extend([
                 (
                     '%d' % i,
-                    str(gdb.parse_and_eval(
+                    str(_eval_(
                         '(hpx::util::detail::tuple_member<%d,%s,void>&)%s'
                         % (i, t, self._impl)
                     ))),
