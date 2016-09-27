@@ -18,29 +18,18 @@ printer_dict = {}
 class BacktracePrinter(object):
     def __init__(self, val):
         self.val = val
-
+        
         self.frames_ = self.val['frames_']
-        self._Myfirst = self.frames_['_Myfirst']
-        self._Mysize = self.frames_['_Mysize']
-        self.stackTrace = self.val['stackTrace']
+
+        self.frames_vis = gdb.default_visualizer(self.frames_)
 
     def to_string(self):
-        txt = "{{ size=%s }}" % (
-            self.frames_['_Mysize'],
+        return "hpx::util::backtrace wrapping: {{ %s }}" % (
+            self.frames_vis.to_string(), 
         )
-        return "backtrace: {{ %s }}" % (txt,)
 
-    def children(self):
-        result = [
-            ('stacktrace',
-                '%s,[%s]%s' % (
-                    self._Myfirst,
-                    self._Mysize,
-                    self.stackTrace,
-                ),
-            ),
-        ]
-                
-        return result
+    def children (self):
+        return self.frames_vis.children()
+
 printer_dict['hpx::util::backtrace'] = BacktracePrinter
 

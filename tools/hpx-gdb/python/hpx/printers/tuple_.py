@@ -38,14 +38,14 @@ class TupleMemberPrinter(object):
             except gdb.error:
                 pass
                 
-        return "tuple_member: {{ %s }}" % (self.txt,)
+        return "tuple_member: {{ %s }}" % ( txt, )
 printer_dict['hpx::util::detail::tuple_member<.+>'] = TupleMemberPrinter
 
 class TuplePrinter(object):
     def __init__(self, val):
         self.val = val
         # Values
-        self._imp = self.val['_impl']
+        self._impl = self.val['_impl']
         # Get the template types
         self.tmpl = []
         for i in range(10):
@@ -54,29 +54,22 @@ class TuplePrinter(object):
             except RuntimeError:
                 break
 
+        self.items = []
+        for i, t in enumerate(self.tmpl):
+            Tp = gdb.lookup_type(
+                '(hpx::util::detail::tuple_member<%s,%s,void>&)' % (i, t)
+            )
+            self.items.append(str(t.cast(Tp)))
+
     def to_string(self):
-        parts = [
-            '%s'
-            % _eval_(
-                '(hpx::util::detail::tuple_member<%d,%s,void>&)%s'
-                % (i, t, self._impl)
-            ) for i, t in enumerate(self.tmpl)
-        ]
-        txt = ', '.join(parts)
+        txt = ', '.join(self.items)
                 
-        return "tuple {{ %s }}" % (txt,)
+        return "tuple {{ %s }}" % ( txt, )
 
     def children(self):
         result = [] 
-        for i, t in enumerate(self.tmpl):
-            result.extend([
-                (
-                    '%d' % i,
-                    str(_eval_(
-                        '(hpx::util::detail::tuple_member<%d,%s,void>&)%s'
-                        % (i, t, self._impl)
-                    ))),
-            ])
+        for i, j in enumerate(self.items):
+            result += [(str(i), j,)]
                 
         return result
 printer_dict['hpx::util::tuple<.+>'] = TuplePrinter
