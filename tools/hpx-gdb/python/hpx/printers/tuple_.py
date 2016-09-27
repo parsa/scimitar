@@ -56,10 +56,11 @@ class TuplePrinter(object):
 
         self.items = []
         for i, t in enumerate(self.tmpl):
-            Tp = gdb.lookup_type(
-                '(hpx::util::detail::tuple_member<%s,%s,void>&)' % (i, t)
-            )
-            self.items.append(str(t.cast(Tp)))
+            #Tp = gdb.lookup_type(
+            #    '(hpx::util::detail::tuple_member<%s,%s,void>&)' % (i, t)
+            #)
+            #self.items.append(str(t.cast(Tp)))
+            self.items.append(str(t))
 
     def to_string(self):
         txt = ', '.join(self.items)
