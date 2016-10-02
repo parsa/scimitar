@@ -1,4 +1,5 @@
-# coding: utf-8
+# -*- coding: utf-8 -*-
+
 '''
     Scimitar: Ye Distributed Debugger
     ~~~~~~~~
@@ -68,3 +69,4 @@ insert_1_line                    = lambda: apply(_insert_1_line)
 insert_n_lines                   = lambda count=1: '\033[{COUNT}L'.format(COUNT=count) # Insert n lines from cursor position
 _insert_n_lines                  = lambda count=1: apply(_insert_n_lines(count))
 
+# vim: :ai:sw=4:ts=4:sts=4:et:ft=python:fo=corqj2:sm:tw=79:

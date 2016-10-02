@@ -1,5 +1,5 @@
-#!/usr/bin/env python
 # coding: utf-8
+
 '''
     Scimitar: Ye Distributed Debugger
     ~~~~~~~~
@@ -17,7 +17,9 @@ _eval_ = gdb.parse_and_eval
 
 printer_dict = {}
 
+
 class TupleMemberPrinter(object):
+
     def __init__(self, val):
         self.val = val
         # Get the template types
@@ -37,11 +39,15 @@ class TupleMemberPrinter(object):
                 txt = '%s' % _eval_('*(%s *)%s' % (self.tmpl[1], self.val))
             except gdb.error:
                 pass
-                
-        return "tuple_member: {{ %s }}" % ( txt, )
+
+        return "tuple_member: {{ %s }}" % (txt, )
+
+
 printer_dict['hpx::util::detail::tuple_member<.+>'] = TupleMemberPrinter
 
+
 class TuplePrinter(object):
+
     def __init__(self, val):
         self.val = val
         # Values
@@ -64,14 +70,21 @@ class TuplePrinter(object):
 
     def to_string(self):
         txt = ', '.join(self.items)
-                
-        return "tuple {{ %s }}" % ( txt, )
+
+        return "tuple {{ %s }}" % (txt, )
+
+    def display_hint(self):
+        return 'map'
 
     def children(self):
-        result = [] 
+        result = []
         for i, j in enumerate(self.items):
-            result += [(str(i), j,)]
-                
+            result += [(str(i),
+                        j, )]
+
         return result
+
+
 printer_dict['hpx::util::tuple<.+>'] = TuplePrinter
 
+# vim: :ai:sw=4:ts=4:sts=4:et:ft=python:fo=corqj2:sm:tw=79:

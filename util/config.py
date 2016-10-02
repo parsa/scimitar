@@ -1,4 +1,5 @@
 # coding: utf-8
+
 '''
     Scimitar: Ye Distributed Debugger
     ~~~~~~~~
@@ -127,3 +128,5 @@ remotes = {
     # MERGE: bigdat_config (406ec14fae894e66ad147245ede1abda)
     # MERGE: supermike2_config (08e71a6fd99246c7ad01e996dd79fea2)
 }
+
+# vim: :ai:sw=4:ts=4:sts=4:et:ft=python:fo=corqj2:sm:tw=79:

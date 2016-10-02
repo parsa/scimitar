@@ -1,4 +1,5 @@
-# coding: utf-8
+# -*- coding: utf-8 -*-
+
 '''
     Scimitar: Ye Distributed Debugger
     ~~~~~~~~
@@ -112,3 +113,5 @@ bg_cyan                          = lambda: apply(_bg_cyan)
 #
 _bg_white                        = '\033[47m'
 bg_white                         = lambda: apply(_bg_white)
+
+# vim: :ai:sw=4:ts=4:sts=4:et:ft=python:fo=corqj2:sm:tw=79:

@@ -1,4 +1,5 @@
-# coding: utf-8
+# -*- coding: utf-8 -*-
+
 '''
     Scimitar: Ye Distributed Debugger
     ~~~~~~~~
@@ -83,3 +84,4 @@ clear_cur_tab                    = lambda: apply(_clear_cur_tab)
 _clear_all_tabs                  = '\033[3g' # Clear all tabs
 clear_all_tabs                   = lambda: apply(_clear_all_tabs)
 
+# vim: :ai:sw=4:ts=4:sts=4:et:ft=python:fo=corqj2:sm:tw=79:

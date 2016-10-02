@@ -1,4 +1,5 @@
-# coding: utf-8
+# -*- coding: utf-8 -*-
+
 '''
     Scimitar: Ye Distributed Debugger
     ~~~~~~~~
@@ -14,21 +15,28 @@
 
 from .exceptions import *
 
+
 class AlarmSignal(ScimitarError):
     pass
+
 
 def __alarm_handler(signum, frame):
     raise AlarmSignal
 
+
 class StopSignal(ScimitarError):
     pass
+
 
 def __stop_handler(signum, frame):
     raise StopSignal
 
+
 class QuitSignal(ScimitarError):
     pass
+
 
 def __quit_handler(signum, frame):
     raise QuitSignal
 
+# vim: :ai:sw=4:ts=4:sts=4:et:ft=python:fo=corqj2:sm:tw=79:

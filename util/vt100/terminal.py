@@ -1,4 +1,5 @@
-# coding: utf-8
+# -*- coding: utf-8 -*-
+
 '''
     Scimitar: Ye Distributed Debugger
     ~~~~~~~~
@@ -37,3 +38,5 @@ enable_interface                 = lambda: apply(_)
 #
 _disable_interface               = '\033[?9l'
 disable_interface                = lambda: apply(_)
+
+# vim: :ai:sw=4:ts=4:sts=4:et:ft=python:fo=corqj2:sm:tw=79:

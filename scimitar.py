@@ -1,5 +1,6 @@
 #!/usr/bin/env python
-# coding: utf-8
+# -*- coding: utf-8 -*-
+
 '''
     Scimitar: Ye Distributed Debugger
     ~~~~~~~~
@@ -53,6 +54,7 @@ Be licensed under Boost Software License, Version 1.0
 warranty; not even for MERCHANTABILITY or FITNESS FER A PARTICULAR PURPOSE.
 '''
 
+
 # HACK: Test async output printing
 def noise():
     pass
@@ -63,10 +65,13 @@ def noise():
 #        print_ahead('Noise.', config.settings['ui']['prompt'])
 
 # Dispatch the command and its arguments to the appropriate mode's processor
+
+
 command_handler_switcher = {
     session.modes.offline: session.offline.process,
     session.modes.debugging: session.debugging.process,
 }
+
 
 def main():
     # Clear the terminal
@@ -104,17 +109,35 @@ def main():
             if update_msg:
                 print_out(update_msg)
         except session.UnknownCommandError as e:
-            print_error('Unknown command: {u1}{cmd}{u0}', cmd=repr_str(e.expression))
+            print_error(
+                'Unknown command: {u1}{cmd}{u0}', cmd = repr_str(e.expression)
+            )
         except session.BadArgsError as e:
-            print_error('Command "{u1}{cmd}{u0}" cannot be initiated with the arguments provided.\n{msg}', cmd=e.expression, msg=e.message)
+            print_error(
+                'Command "{u1}{cmd}{u0}" cannot be initiated with the arguments provided.\n{msg}',
+                cmd = e.expression,
+                msg = e.message
+            )
         except session.BadConfigError as e:
-            print_error('The command encountered errors with the provided arguments.\n{u1}{cmd}{u0}: {msg}.', cmd=e.expression, msg=e.message)
+            print_error(
+                'The command encountered errors with the provided arguments.\n{u1}{cmd}{u0}: {msg}.',
+                cmd = e.expression,
+                msg = e.message
+            )
         except session.CommandFailedError as e:
-            print_error('The command encountered an error and did not run properly.\n{u1}{cmd}{u0}: {msg}.', cmd=e.expression, msg=e.message)
+            print_error(
+                'The command encountered an error and did not run properly.\n{u1}{cmd}{u0}: {msg}.',
+                cmd = e.expression,
+                msg = e.message
+            )
         except session.CommandImplementationIncompleteError:
-            print_error('The implementation of command "{u1}{cmd}{u0}" is not complete yet.', cmd=cmd)
+            print_error(
+                'The implementation of command "{u1}{cmd}{u0}" is not complete yet.',
+                cmd = cmd
+            )
         except KeyboardInterrupt:
             print_error('Action cancelled by the user.')
+
 
 if __name__ == '__main__':
     # NOTE: Multiple SIGKILLs required to force close.
@@ -125,3 +148,5 @@ if __name__ == '__main__':
         # Clean up the terminal before letting go
         vt100.unlock_keyboard()
         vt100.format.clear_all_chars_attrs()
+
+# vim: :ai:sw=4:ts=4:sts=4:et:ft=python:fo=corqj2:sm:tw=79:

@@ -1,5 +1,5 @@
-#!/usr/bin/env python
 # coding: utf-8
+
 '''
     Scimitar: Ye Distributed Debugger
     ~~~~~~~~
@@ -15,6 +15,7 @@
 
 hpx_threads_available = False
 
+
 def main():
     import os
     import urllib2
@@ -27,5 +28,8 @@ def main():
         file.write(code)
     #os.system('bash threads.py')
 
+
 if __name__ == '__main__':
     main()
+
+# vim: :ai:sw=4:ts=4:sts=4:et:ft=python:fo=corqj2:sm:tw=79:

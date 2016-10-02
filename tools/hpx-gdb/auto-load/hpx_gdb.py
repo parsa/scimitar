@@ -1,5 +1,6 @@
 #!/usr/bin/env python
-# coding: utf-8
+# -*- coding: utf-8 -*-
+
 '''
     Scimitar: Ye Distributed Debugger
     ~~~~~~~~
@@ -27,18 +28,20 @@ except ImportError:
     )
 
 gdb.printing.register_pretty_printer(
-    gdb.current_objfile(),
-    hpx.build_pretty_printers())
+    gdb.current_objfile(), hpx.build_pretty_printers()
+)
 
 try:
     n = hpx.threads.hpx_threads_available
     gdb.write(
         'HPX Threading helper cannot be loaded. Please run hpx_threads.py to '
-        'download the script from HPX\'s repository.\n',
-        gdb.STDERR
+        'download the script from HPX\'s repository.\n', gdb.STDERR
     )
     gdb.flush(gdb.STDERR)
 except NameError:
     gdb.execute('define hook-continue')
     gdb.execute('hpx thread restore')
     gdb.execute('end')
+    modeline
+
+# vim: :ai:sw=4:ts=4:sts=4:et:ft=python:fo=corqj2:sm:tw=79:

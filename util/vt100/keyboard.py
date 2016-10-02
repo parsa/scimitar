@@ -1,4 +1,5 @@
-# coding: utf-8
+# -*- coding: utf-8 -*-
+
 '''
     Scimitar: Ye Distributed Debugger
     ~~~~~~~~
@@ -32,3 +33,4 @@ lights_off_on_keyboard           = lambda: apply(_lights_off_on_keyboard)
 _light_x_on_on_keyboard          = lambda x: '\033[{x}q'.format(x=x)
 light_x_on_on_keyboard           = lambda x: apply(_light_x_on_on_keyboard(x))
 
+# vim: :ai:sw=4:ts=4:sts=4:et:ft=python:fo=corqj2:sm:tw=79:

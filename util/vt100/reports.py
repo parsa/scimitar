@@ -1,4 +1,5 @@
-# coding: utf-8
+# -*- coding: utf-8 -*-
+
 '''
     Scimitar: Ye Distributed Debugger
     ~~~~~~~~
@@ -55,3 +56,4 @@ invoke_test_ps           = lambda Ps: apply(_invoke_test_ps(Ps=Ps))
 #    4    EIA modem control signal test
 #    8    Repeat test(s) indefinitely
 
+# vim: :ai:sw=4:ts=4:sts=4:et:ft=python:fo=corqj2:sm:tw=79:

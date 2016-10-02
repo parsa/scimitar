@@ -1,5 +1,5 @@
-#!/usr/bin/env python
 # coding: utf-8
+
 '''
     Scimitar: Ye Distributed Debugger
     ~~~~~~~~
@@ -17,7 +17,9 @@ _eval_ = gdb.parse_and_eval
 
 printer_dict = {}
 
+
 class ClientBasePrinter(object):
+
     def __init__(self, val):
         self.val = val
         # Values
@@ -48,24 +50,21 @@ class ClientBasePrinter(object):
             txt = str(self.state_)
         else:
             txt = 'empty'
-                
-        return "client_base: {{ %s }}" % ( txt, )
+
+        return "client_base: {{ %s }}" % (txt, )
 
     def children(self):
-        result = [] 
+        result = []
         if self.is_px_null:
             if self.is_value:
-                result.extend([
-                    ( 'value', str(self.value) ),
-                ])
+                result.extend([('value', str(self.value)), ])
             elif self.is_exception:
-                result.extend([
-                    ( 'exception', str(self.exception) ),
-                ])
-            result.extend([
-                ( 'count', str(self.count_) ),
-            ])
-                
+                result.extend([('exception', str(self.exception)), ])
+            result.extend([('count', str(self.count_)), ])
+
         return result
+
+
 printer_dict['hpx::components::client_base<(.+)>'] = ClientBasePrinter
 
+# vim: :ai:sw=4:ts=4:sts=4:et:ft=python:fo=corqj2:sm:tw=79:

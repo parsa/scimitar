@@ -1,5 +1,5 @@
-#!/usr/bin/env python
 # coding: utf-8
+
 '''
     Scimitar: Ye Distributed Debugger
     ~~~~~~~~
@@ -17,7 +17,9 @@ _eval_ = gdb.parse_and_eval
 
 printer_dict = {}
 
+
 class ThreadDescriptionPrinter(object):
+
     def __init__(self, val):
         self.val = val
         # Values
@@ -35,7 +37,10 @@ class ThreadDescriptionPrinter(object):
             txt = '[desc] {%s}' % self.desc_
         elif self.is_type_1:
             txt = '[addr] {%s}' % _eval_('(void*)%s' % self.addr_)
-                
-        return "thread_description {{ %s }}" % (txt,)
+
+        return "thread_description {{ %s }}" % (txt, )
+
+
 printer_dict['hpx::util::thread_description'] = ThreadDescriptionPrinter
 
+# vim: :ai:sw=4:ts=4:sts=4:et:ft=python:fo=corqj2:sm:tw=79:
