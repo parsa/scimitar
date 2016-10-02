@@ -20,7 +20,7 @@ def __print_error__(msg):
     gdb.flush(gdb.STDERR)
 
 try:
-    if not modules.has_key(arg):
+    if not modules.has_key('hpx'):
         import hpx
     else:
         reload(hpx)
@@ -38,9 +38,12 @@ try:
             'to download the script from HPX\'s repository.\n'
         )
     except NameError:
-        gdb.execute('define hook-continue')
-        gdb.execute('hpx thread restore')
-        gdb.execute('end')
+        for cmd in [
+            'define hook-continue',
+            'hpx thread restore',
+            'end',
+        ]:
+            gdb.execute(cmd)
 except ImportError:
     __print_error__(
         'Unable to import hpx.\n'
