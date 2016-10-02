@@ -12,7 +12,7 @@
     file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 '''
 import gdb
-import gdb.printing
+#import gdb.printing
 import hpx_threads as threads
 from hpx.printers import *
 import imp
@@ -33,7 +33,8 @@ def build_pretty_printers():
     inc_dict(tuple_)
 
     # Introduce the types to GDB
-    pp = gdb.printing.RegexpCollectionPrettyPrinter("hpx")
+    #pp = gdb.printing.RegexpCollectionPrettyPrinter('hpx')
+    pp = printing.HPXPrinterCollection('hpx')
 
     for k, v in printer_dict.iteritems():
         pattern = '^%s$' % k
@@ -41,11 +42,17 @@ def build_pretty_printers():
 
     return pp
 
+def register_pretty_printer(obj):
+    #gdb.printing.register_pretty_printer(
+    printing.register_pretty_printer(
+        obj, build_pretty_printers()
+    )
+
 
 class ReloadCommand(gdb.Command):
 
     def __init__(self):
-        super(ReloadCommand, self).__init__("reload", gdb.COMMAND_USER)
+        super(ReloadCommand, self).__init__("reload", gdb.COMMAND_NONE)
 
     def invoke(self, arg, from_tty):
         if arg and arg.strip():
