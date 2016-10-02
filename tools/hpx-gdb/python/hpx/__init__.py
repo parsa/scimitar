@@ -12,11 +12,9 @@
     file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 '''
 import gdb
-#import gdb.printing
+import sys
 import hpx_threads as threads
 from hpx.printers import *
-import imp
-import sys
 
 
 def build_pretty_printers():
@@ -52,31 +50,36 @@ def register_pretty_printer(obj):
 class ReloadCommand(gdb.Command):
 
     def __init__(self):
-        super(ReloadCommand, self).__init__("reload", gdb.COMMAND_NONE)
+        super(ReloadCommand, self).__init__("reload", gdb_cmd_type)
 
     def invoke(self, arg, from_tty):
         if arg and arg.strip():
             if sys.modules.has_key(arg):
                 arg_mode = sys.modules[arg]
                 reload(arg_mode)
-                gdb.write('Module "%s" reloaded.\n' % arg)
+                print('Module "%s" reloaded.\n' % arg)
             else:
                 try:
-                    gdb.write(
-                        'Warning: "%s" was not previously loaded.\n' % arg,
-                        gdb.STDOUT
+                    print(
+                        'Warning: "%s" was not previously loaded.\n' % arg
                     )
                     am = __import__(arg)
                     globals()[arg] = am
-                    gdb.write('Module "%s" loaded.\n' % arg)
+                    print('Module "%s" loaded.\n' % arg)
                 except ImportError:
-                    gdb.write(
-                        'Error: Failed to load "%s".\n' % arg, gdb.STDERR
+                    sys.stderr.write(
+                        'Error: Failed to load "%s".\n' % arg
                     )
+                    sys.stderr.flush()
         else:
-            gdb.write('No module name provided.\n', gdb.STDERR)
+            sys.stderr.write('No module name provided.\n')
+            sys.stderr.flush()
 
 
+gdb_cmd_type = gdb.COMMAND_NONE
+if 'COMMAND_USER' in dir(gdb):
+    gdb_cmd_type = gdb.COMMAND_USER
+    
 ReloadCommand()
 
 # vim: :ai:sw=4:ts=4:sts=4:et:ft=python:fo=corqj2:sm:tw=79:

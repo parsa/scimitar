@@ -13,14 +13,14 @@
     file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 '''
 import gdb
-from sys import modules
+import sys
 
 def __print_error__(msg):
-    gdb.write(msg, gdb.STDERR)
-    gdb.flush(gdb.STDERR)
+    sys.stderr.write(msg)
+    sys.stderr.flush()
 
 try:
-    if not modules.has_key('hpx'):
+    if not sys.modules.has_key('hpx'):
         import hpx
     else:
         reload(hpx)
