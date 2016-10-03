@@ -9,6 +9,10 @@
 # Distributed under the Boost Software License, Version 1.0. (See accompanying
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 #
+
+commands = []
+pretty_printers = {}
+
 import gdb
 import sys
 import helpers.commands
@@ -18,9 +22,6 @@ from hpx.printers import *
 GDB_CMD_TYPE = gdb.COMMAND_NONE if 'COMMAND_USER' in dir(
     gdb
 ) else gdb.COMMAND_USER
-
-commands = []
-pretty_printers = {}
 
 
 def build_pretty_printers():
