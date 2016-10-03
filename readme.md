@@ -14,15 +14,15 @@
     * Run `python import hpx_gdb` inside GDB
     * You can also put the commands inside your `.gdbrc`
 
-
-    python
-    sys.path.extend([
-        '<path-to-tools-directory>/auto-load',
-        '<path-to-tools-directory>/python'
-    ])
-    import hpx_gdb
-    end
-
+```
+python
+sys.path.extend([
+    '<path-to-tools-directory>/auto-load',
+    '<path-to-tools-directory>/python'
+])
+import hpx_gdb
+end
+```
 
 ### Prerequisites
 * Software:
