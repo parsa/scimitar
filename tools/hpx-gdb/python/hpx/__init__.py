@@ -25,19 +25,6 @@ GDB_CMD_TYPE = gdb.COMMAND_NONE if 'COMMAND_USER' in dir(
 
 
 def build_pretty_printers():
-    #printer_dict = {}
-    ## Shorthand for adding a dictionary to printer_dict
-    #inc_dict = lambda m: printer_dict.update(m.__printers__)
-    ## Combine all dictionaries
-    #inc_dict(backtrace)
-    #inc_dict(client_base)
-    #inc_dict(future)
-    #inc_dict(gid_type)
-    #inc_dict(id_type)
-    #inc_dict(thread_description)
-    #inc_dict(thread_state)
-    #inc_dict(tuple_)
-
     # Introduce the types to GDB
     pcol = printing.RegexPrettyPrinterCollection('hpx')
 
@@ -51,14 +38,10 @@ def register_pretty_printer(obj):
     printing.register_pretty_printer(obj, build_pretty_printers())
 
 
-def build_commands_list():
-    __commands__.extend(helpers.commands.__commands__)
-    __commands__.extend(threads.commands.__commands__)
-
 
 def register_commands():
     build_commands_list()
-    for cmd in __commands__:
+    for cmd in commands:
         cmd()
 
 
