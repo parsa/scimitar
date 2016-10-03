@@ -68,9 +68,7 @@ and add to it to meet your needs.
   * ui_wxwidgets (`f49ea035cbc845099ac8356d9147dfb0`)
   * ui_curses (`c68045350edc449a90b1dbc4ddbeeb08`)
 * Pretty Printers
-  * hpx_printers (`adc27b95666b4d2aaa34a4004a055e30`)
   * natvis_transformer (`fecd531769f64374a7848815c9299e57`)
-  * boost_printers (`249ae330f2db474fb67a6e79e26853bd`)
 * config.py
   * dotsshconfig (`a6206aa120844233b986cb470013cf54`)
   * stampede_config (`3c21aec9daba4bc49fd2d0d98ec0e46b`)
