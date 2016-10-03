@@ -16,6 +16,7 @@ pretty_printers = {}
 import gdb
 import sys
 import helpers.commands
+import helpers.printing as printing
 import threads.commands
 from scimitar.printers import *
 
