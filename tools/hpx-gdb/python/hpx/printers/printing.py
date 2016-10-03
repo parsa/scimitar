@@ -25,7 +25,7 @@ class HPXSubprinter(object):
         self.enabled = True
 
     def invoke(self, val):
-        return self.printer_type(self.name, val)
+        return self.printer_type(val)
 
 
 class PrinterLookup():

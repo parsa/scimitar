@@ -46,10 +46,12 @@ class CombinedTaggedStatePrinter(object):
                 ('tag', str(self.tag)), ]
 
 
-__printers__['hpx::threads::detail::combined_tagged_state<'
-             'enum hpx::threads::thread_state_enum, '
-             'enum hpx::threads::thread_state_ex_enum '
-             '>'] = CombinedTaggedStatePrinter
+__printers__[
+    'hpx::threads::detail::combined_tagged_state<'
+        'enum hpx::threads::thread_state_enum, '
+        'enum hpx::threads::thread_state_ex_enum '
+    '>'
+] = CombinedTaggedStatePrinter
 
 
 class AtomicCombinedTaggedStatePrinter(object):
@@ -84,11 +86,13 @@ class AtomicCombinedTaggedStatePrinter(object):
                 ('tag', str(self.tag)), ]
 
 
-__printers__['boost::atomics::atomic<'
-             'hpx::threads::detail::combined_tagged_state<'
-             'enum hpx::threads::thread_state_enum, '
-             'enum hpx::threads::thread_state_ex_enum'
-             '>'
-             '>'] = AtomicCombinedTaggedStatePrinter
+__printers__[
+    'boost::atomics::atomic<'
+        'hpx::threads::detail::combined_tagged_state<'
+            'enum hpx::threads::thread_state_enum, '
+            'enum hpx::threads::thread_state_ex_enum'
+        '>'
+    '>'
+] = AtomicCombinedTaggedStatePrinter
 
 # vim: :ai:sw=4:ts=4:sts=4:et:ft=python:fo=corqj2:sm:tw=79:
