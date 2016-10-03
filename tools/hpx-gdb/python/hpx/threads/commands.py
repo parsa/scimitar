@@ -38,7 +38,7 @@ class HPXListCommand(gdb.Command):
 
     def __init__(self):
         super(
-            HPXList, self
+            HPXListCommand, self
         ).__init__("hpx list", hpx.GDB_CMD_TYPE, gdb.COMPLETE_NONE, True)
 
     def invoke(self, arg, from_tty):
@@ -51,7 +51,7 @@ class HPXListThreadsCommand(gdb.Command):
     '''
 
     def __init__(self):
-        super(HPXListThreads, self).__init__(
+        super(HPXListThreadsCommand, self).__init__(
             "hpx list threads", hpx.GDB_CMD_TYPE, gdb.COMPLETE_NONE, False
         )
 
@@ -138,7 +138,7 @@ class HPXSelectThreadCommand(gdb.Command):
     '''
 
     def __init__(self):
-        super(HPXSelectThread, self).__init__(
+        super(HPXSelectThreadCommand, self).__init__(
             "hpx thread", hpx.GDB_CMD_TYPE, gdb.COMPLETE_NONE, False
         )
 
@@ -181,7 +181,7 @@ class HPXContinueCommand(gdb.Command):
     '''
 
     def __init__(self):
-        super(HPXContinue, self).__init__(
+        super(HPXContinueCommand, self).__init__(
             "hpx continue", hpx.GDB_CMD_TYPE, gdb.COMPLETE_NONE, False
         )
 
