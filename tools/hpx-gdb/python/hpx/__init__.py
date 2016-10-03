@@ -38,9 +38,7 @@ def register_pretty_printer(obj):
     printing.register_pretty_printer(obj, build_pretty_printers())
 
 
-
 def register_commands():
-    build_commands_list()
     for cmd in commands:
         cmd()
 
