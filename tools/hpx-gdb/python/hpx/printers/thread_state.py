@@ -45,7 +45,7 @@ class CombinedTaggedStatePrinter(object):
                 ('tag', str(self.tag)), ]
 
 
-__printers__[
+hpx.pretty_printers[
     'hpx::threads::detail::combined_tagged_state<'
         'enum hpx::threads::thread_state_enum, '
         'enum hpx::threads::thread_state_ex_enum '
