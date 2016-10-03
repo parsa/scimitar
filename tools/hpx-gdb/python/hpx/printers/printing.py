@@ -9,9 +9,12 @@
 # Distributed under the Boost Software License, Version 1.0. (See accompanying
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 #
+'''
+This module provides compatibility with older GDB versions that do not
+have gdb.printing available.
+'''
 import gdb
 import re
-from collections import Mapping
 
 
 class HPXSubprinter(object):
@@ -25,40 +28,32 @@ class HPXSubprinter(object):
         return self.printer_type(self.name, val)
 
 
-class NameLookup(Mapping):
+class PrinterLookup():
 
     def __init__(self):
-        self.map = {}
-        #self.name_regex = re.compile('^([\w:]+)(<.*>)?')
+        self.mappings = {}
 
     def add_type(self, regex_pattern, printer):
         compiled_pattern = re.compile(regex_pattern)
-        self.map[compiled_pattern] = printer
+        self.mappings[compiled_pattern] = printer
 
     def __len__(self):
-        return len(self.map)
+        return len(self.mappings)
+
+    def __iter__(self):
+        return self.mappings
 
     def __getitem__(self, type):
         typename = self._basic_type(type)
         if typename:
-            for i in self.map.keys():
+            for i in self.mappings.keys():
                 if i.match(typename):
-                    return self.map[i]
-            #if typename and typename in self.map:
-            #    return self.map[typename]
+                    return self.mappings[i]
         return None
-
-    def __iter__(self):
-        return self.map
 
     def _basic_type(self, type):
         basic_type = self.basic_type(type)
         return basic_type
-        #if basic_type:
-        #    match = self.name_regex.match(basic_type)
-        #    if match:
-        #        return match.group(1)
-        #return None
 
     @staticmethod
     def basic_type(type):
@@ -73,16 +68,16 @@ class HPXPrinterCollection(object):
     def __init__(self, name):
         self.name = name
         self.subprinters = []
-        self.name_lookup = NameLookup()
+        self.lookup = PrinterLookup()
         self.enabled = True
 
     def add_printer(self, printer_name, regex_pattern, printer_type):
         printer = HPXSubprinter(printer_name, printer_type)
         self.subprinters.append(printer)
-        self.name_lookup.add_type(regex_pattern, printer)
+        self.lookup.add_type(regex_pattern, printer)
 
     def __call__(self, val):
-        printer = self.name_lookup[val.type]
+        printer = self.lookup[val.type]
         if printer:
             return printer.invoke(val)
         return None
