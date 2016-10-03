@@ -17,8 +17,8 @@
 ```
 python
 sys.path.extend([
-    '<path-to-tools-directory>/auto-load',
-    '<path-to-tools-directory>/python'
+    '<path to hpx-gdb directory>/auto-load',
+    '<path to hpx-gdb directory>/python',
 ])
 import hpx_gdb
 end
