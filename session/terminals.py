@@ -1,21 +1,20 @@
-# coding: utf-8
+# -*- coding: utf-8 -*-
+#
+# Scimitar: Ye Distributed Debugger
+# 
+# Copyright (c) 2016 Parsa Amini
+# Copyright (c) 2016 Hartmut Kaiser
+# Copyright (c) 2016 Thomas Heller
+#
+# Distributed under the Boost Software License, Version 1.0. (See accompanying
+# file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+#
 '''
-    Scimitar: Ye Distributed Debugger
-    ~~~~~~~~
-    :copyright:
-    Copyright (c) 2016 Parsa Amini
-    Copyright (c) 2016 Hartmut Kaiser
-    Copyright (c) 2016 Thomas Heller
+module scimitar.session.offline_session
 
-    :license:
-    Distributed under the Boost Software License, Version 1.0. (See accompanying
-    file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
-
-    module scimitar.session.offline_session
-
-    This module contains code used by the main Scimitar procedure. The code in
-    this module is executed in offline mode i.e. when Scimitar no debuggin
-    session is active and while being idle.
+This module contains code used by the main Scimitar procedure. The code in
+this module is executed in offline mode i.e. when Scimitar no debuggin
+session is active and while being idle.
 '''
 
 from . import modes, local_session as _local_s, remote_session as _remote_s
@@ -60,3 +59,5 @@ class LocalTerminal(Terminal):
 class RemoteTerminal(Terminal):
     def __init__():
         pass
+
+# vim: :ai:sw=4:ts=4:sts=4:et:ft=python:fo=corqj2:sm:tw=79:

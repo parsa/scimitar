@@ -1,24 +1,14 @@
-# coding: utf-8
-'''
-    Scimitar: Ye Distributed Debugger
-    ~~~~~~~~
-    :copyright:
-    Copyright (c) 2016 Parsa Amini
-    Copyright (c) 2016 Hartmut Kaiser
-    Copyright (c) 2016 Thomas Heller
-
-    :license:
-    Distributed under the Boost Software License, Version 1.0. (See accompanying
-    file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
-
-    module scimitar.session.local_session
-
-    This module contains code used by the main Scimitar procedure. The code in
-    this module is executed in local mode i.e. when Scimitar is attempting to
-    prepare GDB sessions on a local machine. When GDB session(s) are ready the
-    mode will change to debugging_session.
-'''
-
+# -*- coding: utf-8 -*-
+#
+# Scimitar: Ye Distributed Debugger
+# 
+# Copyright (c) 2016 Parsa Amini
+# Copyright (c) 2016 Hartmut Kaiser
+# Copyright (c) 2016 Thomas Heller
+#
+# Distributed under the Boost Software License, Version 1.0. (See accompanying
+# file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+#
 from .exceptions import *
 from . import modes
 from util import configuration, print_ahead
@@ -112,3 +102,4 @@ class LocalSession():
     def __exit__(self):
         raise CommandImplementationIncompleteError
 
+# vim: :ai:sw=4:ts=4:sts=4:et:ft=python:fo=corqj2:sm:tw=79:

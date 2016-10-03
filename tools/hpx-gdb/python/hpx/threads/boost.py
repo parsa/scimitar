@@ -1,18 +1,16 @@
 # -*- coding: utf-8 -*-
-
-'''
-    Scimitar: Ye Distributed Debugger
-    ~~~~~~~~
-    :copyright:
-    Copyright (c) 2014 Thomas Heller
-    Copyright (c) 2016 Parsa Amini
-    Copyright (c) 2016 Hartmut Kaiser
-    :license:
-    Distributed under the Boost Software License, Version 1.0. (See accompanying
-    file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
-'''
-
+#
+# Scimitar: Ye Distributed Debugger
+# 
+# Copyright (c) 2016 Parsa Amini
+# Copyright (c) 2016 Hartmut Kaiser
+# Copyright (c) 2016 Thomas Heller
+#
+# Distributed under the Boost Software License, Version 1.0. (See accompanying
+# file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+#
 import gdb
+
 
 class Unordered(object):
     '''Common representation of Boost.Unordered types in Boost 1.52.'''
@@ -40,7 +38,9 @@ class Unordered(object):
             start_node = start_bucket.dereference()['next_']
             if self.extra_node:
                 start_node = start_node.dereference()['next_']
-            return self._iterator(start_node, self.node_type, self.value_type, self.extractor)
+            return self._iterator(
+                start_node, self.node_type, self.value_type, self.extractor
+            )
         else:
             return iter([])
 
@@ -57,10 +57,16 @@ class Unordered(object):
         allocators = table.type['allocators_']
         assert allocators
 
-        self.node_type = allocators.type.template_argument(1).template_argument(0)
-        bucket_type = allocators.type.template_argument(0).template_argument(0).strip_typedefs()
+        self.node_type = allocators.type.template_argument(
+            1
+        ).template_argument(0)
+        bucket_type = allocators.type.template_argument(0).template_argument(
+            0
+        ).strip_typedefs()
 
-        self.extra_node = (str(bucket_type) == 'boost::unordered::detail::bucket')
+        self.extra_node = (
+            str(bucket_type) == 'boost::unordered::detail::bucket'
+        )
 
     class _iterator(object):
         '''Iterator for Boost.Unordered types'''
@@ -93,6 +99,7 @@ class Unordered(object):
             node = self.node.dereference().cast(self.node_type)
             return node['value_base_']['data_'].cast(self.value_type)
 
+
 class Map(Unordered):
 
     def __init__(self, value):
@@ -108,6 +115,7 @@ class Map(Unordered):
 
         def make_type(self, key, value):
             return gdb.lookup_type('std::pair<%s, %s>' % (key.const(), value))
+
 
 class Set(Unordered):
 
