@@ -36,7 +36,7 @@ def build_pretty_printers():
     inc_dict(tuple_)
 
     # Introduce the types to GDB
-    pp = printing.HPXPrinterCollection('hpx')
+    pp = printing.HPXPrettyPrinterCollection('hpx')
 
     for k, v in printer_dict.iteritems():
         pattern = '^%s$' % k

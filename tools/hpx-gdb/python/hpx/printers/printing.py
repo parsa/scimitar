@@ -27,60 +27,45 @@ class HPXSubprinter(object):
     def invoke(self, val):
         return self.printer_type(val)
 
+class HPXPrettyPrinterCollection(object):
 
-class PrinterLookup():
-
-    def __init__(self):
-        self.mappings = {}
-
-    def add_type(self, regex_pattern, printer):
-        compiled_pattern = re.compile(regex_pattern)
-        self.mappings[compiled_pattern] = printer
-
-    def __len__(self):
-        return len(self.mappings)
-
-    def __iter__(self):
-        return self.mappings
-
-    def __getitem__(self, type):
-        typename = self._basic_type(type)
-        if typename:
-            for i in self.mappings.keys():
-                if i.match(typename):
-                    return self.mappings[i]
-        return None
-
-    def _basic_type(self, type):
-        basic_type = self.basic_type(type)
-        return basic_type
-
-    @staticmethod
-    def basic_type(type):
-        if type.code == gdb.TYPE_CODE_REF:
-            type = type.target()
-        type = type.unqualified().strip_typedefs()
-        return type.tag
-
-
-class HPXPrinterCollection(object):
+    class RegexSubprinter(object):
+        def __init__(self, name, pattern, printer_type):
+            self.name = name
+            self.enabled = True
+            self.pattern = pattern
+            self.printer_type = printer_type
+            self.compiled_pattern = re.compile(pattern)
 
     def __init__(self, name):
         self.name = name
-        self.subprinters = []
-        self.lookup = PrinterLookup()
+        self.subprinters = None
         self.enabled = True
 
     def add_printer(self, printer_name, regex_pattern, printer_type):
-        printer = HPXSubprinter(printer_name, printer_type)
-        self.subprinters.append(printer)
-        self.lookup.add_type(regex_pattern, printer)
+        if not self.subprinters:
+            self.subprinters = []
+        self.subprinters.append(self.RegexSubprinter(printer_name, regex_pattern, printer_type))
 
     def __call__(self, val):
-        printer = self.lookup[val.type]
-        if printer:
-            return printer.invoke(val)
+        typename = self.get_basic_type(val.type).tag
+        if not typename:
+            return None
+
+        for printer in self.subprinters:
+            if printer.enabled and printer.compiled_pattern.search(typename):
+                return printer.printer_type(val)
         return None
+
+    def _basic_type(self, type_):
+        while (type_.code == gdb.TYPE_CODE_REF or
+               type_.code == gdb.TYPE_CODE_TYPEDEF):
+            if type_.code == gdb.TYPE_CODE_REF:
+                type_ = type_.target()
+            else:
+                type_ = type_.strip_typedefs()
+        return type_.unqualified()
+    
 
 
 def register_pretty_printer(obj, printer):
