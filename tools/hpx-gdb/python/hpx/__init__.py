@@ -13,9 +13,13 @@
 '''
 import gdb
 import sys
-import threads
 from hpx.printers import *
 
+gdb_cmd_type = gdb.COMMAND_NONE
+if 'COMMAND_USER' in dir(gdb):
+    gdb_cmd_type = gdb.COMMAND_USER
+
+import threads
 
 def build_pretty_printers():
     printer_dict = {}
@@ -73,11 +77,6 @@ class ReloadCommand(gdb.Command):
             sys.stderr.write('No module name provided.\n')
             sys.stderr.flush()
 
-
-gdb_cmd_type = gdb.COMMAND_NONE
-if 'COMMAND_USER' in dir(gdb):
-    gdb_cmd_type = gdb.COMMAND_USER
-    
 ReloadCommand()
 
 # vim: :ai:sw=4:ts=4:sts=4:et:ft=python:fo=corqj2:sm:tw=79:
