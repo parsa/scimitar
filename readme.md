@@ -1,16 +1,23 @@
 # Scimitar
 ## Ye Distributed Debugger
 
-### Testing HPX Pretty Printers
-* The printers are in the [tools](https://github.com/parsa/scimitar/tree/master/tools) directory.
-* To import the printers you have two options:
-    * Run `python execfile('PATH_TO_hpx-gdb.py_FILE')`.
-    * Run `python sys.path.append('PATH_TO_TOOLS_DIR')`, followed by `import printers`
+### HPX GDB Integration
+* The scripts are in the
+  [tools](https://github.com/parsa/scimitar/tree/master/tools) directory.
+* To import the printers:
+    * If your GDB is set up to perform auto loading simply copy `auto-load` and
+      `python` directories to the appropriate locations.
+    * If you're not using auto-load then ensure the path to auto-load and
+      Python directories are in `sys.path`
+        * One option to add them to GDB Python's sys.path is running `python
+          sys.path.append('<PATH_TO_DIR>')` for both directories.
+    * Run `python import hpx_gdb` inside GDB
+    * You can also put the commands inside your `.gdbrc`
 
 ### Prerequisites
 * Software:
   * Python 2.7
-  * GDB
+  * GDB 7.1
 * Python Modules
   * pexpect
 
@@ -24,7 +31,8 @@ and add to it to meet your needs.
 * Schedule a job to run your application. Ensure mpirun starts.
 * Run `scimitar.py` on your machine
 * Start a session by `remote <host> <scheduler job id>`
-* Once you're connected you can switch between localities by using the command `switch <locality id>`
+* Once you're connected you can switch between localities by using the command
+  `switch <locality id>`
 
 ## Commands
 * local raw
@@ -38,8 +46,6 @@ and add to it to meet your needs.
 ### Pending merges:
 * GDB/MI
   * MERGE: mi_parser (8ec00bfed88d4beda1c37a516d953638)
-* Threads
-  * MERGE: thomas_hpx_threads (edccc92d28b14260b1a04930a7e2d836)
 * Sessions
   * MERGE: local_session (8c110db273af4a81bea68ef8686f1beb)
   * MERGE: switch_locality (6d52ba7248ed48368d556620d753cbce)

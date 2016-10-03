@@ -127,7 +127,7 @@ class HPXThread():
                 frame = frame.older()
                 function_name = frame.name()
 
-            if not frame.older() is None:
+            if frame.older() is not None:
                 frame = frame.older()
                 function_name = frame.name()
 

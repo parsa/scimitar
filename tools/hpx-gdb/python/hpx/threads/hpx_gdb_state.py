@@ -33,7 +33,7 @@ class HPXGdbState():
         self.lock.acquire()
         cur_os_thread = gdb.selected_thread().num
         try:
-            if not self.context is None:
+            if self.context is not None:
                 for os_thread in self.context:
                     ctx = self.context[os_thread]
                     gdb.execute("thread %d" % os_thread, False, True)
