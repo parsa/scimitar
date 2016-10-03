@@ -10,10 +10,9 @@
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 #
 import gdb
+import hpx
 
 _eval_ = gdb.parse_and_eval
-
-__printers__ = {}
 
 
 class CombinedTaggedStatePrinter(object):
@@ -86,7 +85,7 @@ class AtomicCombinedTaggedStatePrinter(object):
                 ('tag', str(self.tag)), ]
 
 
-__printers__[
+hpx.pretty_printers[
     'boost::atomics::atomic<'
         'hpx::threads::detail::combined_tagged_state<'
             'enum hpx::threads::thread_state_enum, '

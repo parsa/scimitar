@@ -40,6 +40,6 @@ class ReloadCommand(gdb.Command):
             sys.stderr.flush()
 
 
-__commands__ = (ReloadCommand, )
+hpx.commands.extend([ReloadCommand])
 
 # vim: :ai:sw=4:ts=4:sts=4:et:ft=python:fo=corqj2:sm:tw=79:

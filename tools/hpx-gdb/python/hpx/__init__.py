@@ -11,7 +11,7 @@
 #
 import gdb
 import sys
-import commands
+import helpers.commands
 import threads.commands
 from hpx.printers import *
 
@@ -19,31 +19,31 @@ GDB_CMD_TYPE = gdb.COMMAND_NONE if 'COMMAND_USER' in dir(
     gdb
 ) else gdb.COMMAND_USER
 
-__commands__ = []
+commands = []
+pretty_printers = {}
 
 
 def build_pretty_printers():
-    printer_dict = {}
-    # Shorthand for adding a dictionary to printer_dict
-    inc_dict = lambda m: printer_dict.update(m.__printers__)
-    # Combine all dictionaries
-    inc_dict(backtrace)
-    inc_dict(client_base)
-    inc_dict(future)
-    inc_dict(gid_type)
-    inc_dict(id_type)
-    inc_dict(thread_description)
-    inc_dict(thread_state)
-    inc_dict(tuple_)
+    #printer_dict = {}
+    ## Shorthand for adding a dictionary to printer_dict
+    #inc_dict = lambda m: printer_dict.update(m.__printers__)
+    ## Combine all dictionaries
+    #inc_dict(backtrace)
+    #inc_dict(client_base)
+    #inc_dict(future)
+    #inc_dict(gid_type)
+    #inc_dict(id_type)
+    #inc_dict(thread_description)
+    #inc_dict(thread_state)
+    #inc_dict(tuple_)
 
     # Introduce the types to GDB
-    pp = printing.HPXPrettyPrinterCollection('hpx')
+    pcol = printing.RegexPrettyPrinterCollection('hpx')
 
-    for k, v in printer_dict.iteritems():
-        pattern = '^%s$' % k
-        pp.add_printer(k, pattern, v)
+    for k, v in pretty_printers.iteritems():
+        pcol.add_printer(k, '^%s$' % k, v)
 
-    return pp
+    return pcol
 
 
 def register_pretty_printer(obj):
@@ -51,7 +51,7 @@ def register_pretty_printer(obj):
 
 
 def build_commands_list():
-    __commands__.extend(commands.__commands__)
+    __commands__.extend(helpers.commands.__commands__)
     __commands__.extend(threads.commands.__commands__)
 
 

@@ -17,17 +17,7 @@ import gdb
 import re
 
 
-class HPXSubprinter(object):
-
-    def __init__(self, name, printer_type):
-        self.name = name
-        self.printer_type = printer_type
-        self.enabled = True
-
-    def invoke(self, val):
-        return self.printer_type(val)
-
-class HPXPrettyPrinterCollection(object):
+class RegexPrettyPrinterCollection(object):
 
     class RegexSubprinter(object):
         def __init__(self, name, pattern, printer_type):

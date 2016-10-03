@@ -221,12 +221,12 @@ class HPXContinueCommand(gdb.Command):
 
 
 state = HPXGdbState()
-__commands__ = (
+hpx.commands.extend([
     HPXCommand,
     HPXContinueCommand,
     HPXListCommand,
     HPXListThreadsCommand,
     HPXSelectThreadCommand,
-)
+])
 
 #gdb.events.cont.connect(restore_context)

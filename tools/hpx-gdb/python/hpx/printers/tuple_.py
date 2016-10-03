@@ -10,10 +10,9 @@
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 #
 import gdb
+import hpx
 
 _eval_ = gdb.parse_and_eval
-
-__printers__ = {}
 
 
 class TupleMemberPrinter(object):
@@ -41,7 +40,7 @@ class TupleMemberPrinter(object):
         return "tuple_member: {{ %s }}" % (txt, )
 
 
-__printers__['hpx::util::detail::tuple_member<.+>'] = TupleMemberPrinter
+hpx.pretty_printers['hpx::util::detail::tuple_member<.+>'] = TupleMemberPrinter
 
 
 class TuplePrinter(object):
