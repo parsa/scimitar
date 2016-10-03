@@ -29,8 +29,8 @@ class HPXCommand(gdb.Command):
             self, "hpx", hpx.GDB_CMD_TYPE, gdb.COMPLETE_NONE, True
         )
 
-#  def invoke(self, arg, from_tty):
-#    print("Hello World")
+    #def invoke(self, arg, from_tty):
+    #    print("Hello World")
 
 
 class HPXListCommand(gdb.Command):
@@ -41,8 +41,8 @@ class HPXListCommand(gdb.Command):
             HPXListCommand, self
         ).__init__("hpx list", hpx.GDB_CMD_TYPE, gdb.COMPLETE_NONE, True)
 
-    def invoke(self, arg, from_tty):
-        print("Hello World")
+    #def invoke(self, arg, from_tty):
+    #    print("Hello World")
 
 
 class HPXListThreadsCommand(gdb.Command):

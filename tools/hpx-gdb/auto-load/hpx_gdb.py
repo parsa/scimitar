@@ -20,10 +20,7 @@ def __print_error__(msg):
 
 
 try:
-    if not sys.modules.has_key('hpx'):
-        import hpx
-    else:
-        reload(hpx)
+    import hpx
 
     # Pretty Printers
     hpx.register_pretty_printer(gdb.current_objfile())
