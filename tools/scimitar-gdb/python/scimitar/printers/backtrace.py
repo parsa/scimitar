@@ -10,7 +10,7 @@
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 #
 import gdb
-import hpx
+import scimitar
 
 
 class BacktracePrinter(object):
@@ -31,6 +31,6 @@ class BacktracePrinter(object):
         return self.frames_vis.children()
 
 
-hpx.pretty_printers['hpx::util::backtrace'] = BacktracePrinter
+scimitar.pretty_printers['hpx::util::backtrace'] = BacktracePrinter
 
 # vim: :ai:sw=4:ts=4:sts=4:et:ft=python:fo=corqj2:sm:tw=79:

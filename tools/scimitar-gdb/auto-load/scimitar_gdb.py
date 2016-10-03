@@ -20,15 +20,15 @@ def __print_error__(msg):
 
 
 try:
-    import hpx
+    import scimitar
 
     # Pretty Printers
-    hpx.register_pretty_printer(gdb.current_objfile())
+    scimitar.register_pretty_printer(gdb.current_objfile())
 
 except ImportError:
     __print_error__(
-        'Unable to import hpx.\n'
-        'Make sure the hpx-gdb directory is accessible to Python via sys.path\n'
+        'Unable to import scimitar.\n'
+        'Make sure the scimitar-gdb directory is accessible to Python via sys.path\n'
     )
 
 # vim: :ai:sw=4:ts=4:sts=4:et:ft=python:fo=corqj2:sm:tw=79:

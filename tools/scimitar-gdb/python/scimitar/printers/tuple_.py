@@ -10,7 +10,7 @@
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 #
 import gdb
-import hpx
+import scimitar
 
 _eval_ = gdb.parse_and_eval
 
@@ -40,7 +40,7 @@ class TupleMemberPrinter(object):
         return "tuple_member: {{ %s }}" % (txt, )
 
 
-hpx.pretty_printers['hpx::util::detail::tuple_member<.+>'] = TupleMemberPrinter
+scimitar.pretty_printers['hpx::util::detail::tuple_member<.+>'] = TupleMemberPrinter
 
 
 class TuplePrinter(object):
@@ -82,6 +82,6 @@ class TuplePrinter(object):
         return result
 
 
-hpx.pretty_printers['hpx::util::tuple<.+>'] = TuplePrinter
+scimitar.pretty_printers['hpx::util::tuple<.+>'] = TuplePrinter
 
 # vim: :ai:sw=4:ts=4:sts=4:et:ft=python:fo=corqj2:sm:tw=79:

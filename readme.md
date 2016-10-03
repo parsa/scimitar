@@ -1,7 +1,7 @@
 # Scimitar
 ## Ye Distributed Debugger
 
-### HPX GDB Integration
+### GDB Integration
 * The scripts are in the
   [tools](`https://github.com/parsa/scimitar/tree/master/tools`) directory.
 * To import the printers:
@@ -11,16 +11,16 @@
       Python directories are in `sys.path`
         * One option to add them to GDB Python's sys.path is running `python
           sys.path.append(`'<PATH_TO_DIR>'`)` for both directories.
-    * Run `python import hpx_gdb` inside GDB
+    * Run `python import scimitar_gdb` inside GDB
     * You can also put the commands inside your `.gdbrc`
 
 ```
 python
 sys.path.extend([
-    '<path to hpx-gdb directory>/auto-load',
-    '<path to hpx-gdb directory>/python',
+    '<path to scimitar-gdb directory>/auto-load',
+    '<path to scimitar-gdb directory>/python',
 ])
-import hpx_gdb
+import scimitar_gdb
 end
 ```
 

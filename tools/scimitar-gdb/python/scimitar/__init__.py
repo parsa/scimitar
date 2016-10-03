@@ -17,7 +17,7 @@ import gdb
 import sys
 import helpers.commands
 import threads.commands
-from hpx.printers import *
+from scimitar.printers import *
 
 GDB_CMD_TYPE = gdb.COMMAND_NONE if 'COMMAND_USER' in dir(
     gdb

@@ -11,13 +11,13 @@
 #
 import gdb
 import sys
-import hpx
+import scimitar
 
 
 class ReloadCommand(gdb.Command):
 
     def __init__(self):
-        super(ReloadCommand, self).__init__("reload", hpx.GDB_CMD_TYPE)
+        super(ReloadCommand, self).__init__("reload", scimitar.GDB_CMD_TYPE)
 
     def invoke(self, arg, from_tty):
         if arg and arg.strip():
@@ -40,6 +40,6 @@ class ReloadCommand(gdb.Command):
             sys.stderr.flush()
 
 
-hpx.commands.extend([ReloadCommand])
+scimitar.commands.extend([ReloadCommand])
 
 # vim: :ai:sw=4:ts=4:sts=4:et:ft=python:fo=corqj2:sm:tw=79:

@@ -10,7 +10,7 @@
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 #
 import gdb
-import hpx
+import scimitar
 
 _eval_ = gdb.parse_and_eval
 
@@ -45,7 +45,7 @@ class CombinedTaggedStatePrinter(object):
                 ('tag', str(self.tag)), ]
 
 
-hpx.pretty_printers[
+scimitar.pretty_printers[
     'hpx::threads::detail::combined_tagged_state<'
         'enum hpx::threads::thread_state_enum, '
         'enum hpx::threads::thread_state_ex_enum '
@@ -85,7 +85,7 @@ class AtomicCombinedTaggedStatePrinter(object):
                 ('tag', str(self.tag)), ]
 
 
-hpx.pretty_printers[
+scimitar.pretty_printers[
     'boost::atomics::atomic<'
         'hpx::threads::detail::combined_tagged_state<'
             'enum hpx::threads::thread_state_enum, '

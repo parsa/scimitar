@@ -16,7 +16,7 @@ hpx.py - A set of functions to help debug a HPX binary inside of GDB
 import gdb
 import re
 import boost
-import hpx
+import scimitar
 from hpx_thread import HPXThread
 from hpx_gdb_state import HPXGdbState
 
@@ -26,7 +26,7 @@ class HPXCommand(gdb.Command):
 
     def __init__(self):
         gdb.Command.__init__(
-            self, "hpx", hpx.GDB_CMD_TYPE, gdb.COMPLETE_NONE, True
+            self, "hpx", scimitar.GDB_CMD_TYPE, gdb.COMPLETE_NONE, True
         )
 
     #def invoke(self, arg, from_tty):
@@ -39,7 +39,7 @@ class HPXListCommand(gdb.Command):
     def __init__(self):
         super(
             HPXListCommand, self
-        ).__init__("hpx list", hpx.GDB_CMD_TYPE, gdb.COMPLETE_NONE, True)
+        ).__init__("hpx list", scimitar.GDB_CMD_TYPE, gdb.COMPLETE_NONE, True)
 
     #def invoke(self, arg, from_tty):
     #    print("Hello World")
@@ -52,7 +52,7 @@ class HPXListThreadsCommand(gdb.Command):
 
     def __init__(self):
         super(HPXListThreadsCommand, self).__init__(
-            "hpx list threads", hpx.GDB_CMD_TYPE, gdb.COMPLETE_NONE, False
+            "hpx list threads", scimitar.GDB_CMD_TYPE, gdb.COMPLETE_NONE, False
         )
 
     def deref_stack(self, addr):
@@ -139,7 +139,7 @@ class HPXSelectThreadCommand(gdb.Command):
 
     def __init__(self):
         super(HPXSelectThreadCommand, self).__init__(
-            "hpx thread", hpx.GDB_CMD_TYPE, gdb.COMPLETE_NONE, False
+            "hpx thread", scimitar.GDB_CMD_TYPE, gdb.COMPLETE_NONE, False
         )
 
     def deref_stack(self, addr):
@@ -182,7 +182,7 @@ class HPXContinueCommand(gdb.Command):
 
     def __init__(self):
         super(HPXContinueCommand, self).__init__(
-            "hpx continue", hpx.GDB_CMD_TYPE, gdb.COMPLETE_NONE, False
+            "hpx continue", scimitar.GDB_CMD_TYPE, gdb.COMPLETE_NONE, False
         )
 
     def invoke(self, arg, from_tty):
@@ -221,7 +221,7 @@ class HPXContinueCommand(gdb.Command):
 
 
 state = HPXGdbState()
-hpx.commands.extend([
+scimitar.commands.extend([
     HPXCommand,
     HPXContinueCommand,
     HPXListCommand,
