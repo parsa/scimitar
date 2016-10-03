@@ -13,7 +13,7 @@
 '''
 import gdb
 import sys
-import hpx_threads as threads
+import threads
 from hpx.printers import *
 
 
