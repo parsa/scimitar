@@ -31,6 +31,7 @@ def build_pretty_printers():
     inc_dict(client_base)
     inc_dict(future)
     inc_dict(gid_type)
+    inc_dict(id_type)
     inc_dict(thread_description)
     inc_dict(thread_state)
     inc_dict(tuple_)
