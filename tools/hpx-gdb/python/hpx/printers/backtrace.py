@@ -11,7 +11,7 @@
 #
 import gdb
 
-printer_dict = {}
+__printers__ = {}
 
 
 class BacktracePrinter(object):
@@ -32,6 +32,6 @@ class BacktracePrinter(object):
         return self.frames_vis.children()
 
 
-printer_dict['hpx::util::backtrace'] = BacktracePrinter
+__printers__['hpx::util::backtrace'] = BacktracePrinter
 
 # vim: :ai:sw=4:ts=4:sts=4:et:ft=python:fo=corqj2:sm:tw=79:

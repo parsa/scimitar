@@ -11,6 +11,7 @@
 #
 from util.exceptions import *
 
+
 class UnknownCommandError(ScimitarError):
     '''Raised when the command called does not exist.'''
 
@@ -18,35 +19,45 @@ class UnknownCommandError(ScimitarError):
         self.message = 'Unknown command entered'
         self.expression = cmd
 
+
 class BadArgsError(ScimitarError):
     '''Raised when arguments of a command are nonsense.'''
+
     def __init__(self, cmd, expectation):
         self.message = expectation
         self.expression = cmd
+
 
 class CommandFailedError(ScimitarError):
     '''Raised when command fails and no clue what's wrong.'''
+
     def __init__(self, cmd, expectation):
         self.message = expectation
         self.expression = cmd
 
+
 class BadConfigError(ScimitarError):
     '''Raised when configuration seems to have wrong values.'''
+
     def __init__(self, cmd, expectation):
         self.message = expectation
         self.expression = cmd
+
 
 class TimeOutError(ScimitarError):
     '''Can be raised when something times out.'''
     pass
 
+
 class UnexpectedResponseError(ScimitarError):
     '''Raised when encountering an unexpected response during SSH connections.'''
     pass
 
+
 class NoRunningAppFoundError(ScimitarError):
     '''Raised when no running application is found on the system'''
     pass
+
 
 class CommandImplementationIncompleteError(ScimitarError):
     '''Raised when a command I had to remove is called.'''

@@ -13,7 +13,7 @@ import gdb
 
 _eval_ = gdb.parse_and_eval
 
-printer_dict = {}
+__printers__ = {}
 
 
 class TupleMemberPrinter(object):
@@ -41,7 +41,7 @@ class TupleMemberPrinter(object):
         return "tuple_member: {{ %s }}" % (txt, )
 
 
-printer_dict['hpx::util::detail::tuple_member<.+>'] = TupleMemberPrinter
+__printers__['hpx::util::detail::tuple_member<.+>'] = TupleMemberPrinter
 
 
 class TuplePrinter(object):
@@ -83,6 +83,6 @@ class TuplePrinter(object):
         return result
 
 
-printer_dict['hpx::util::tuple<.+>'] = TuplePrinter
+__printers__['hpx::util::tuple<.+>'] = TuplePrinter
 
 # vim: :ai:sw=4:ts=4:sts=4:et:ft=python:fo=corqj2:sm:tw=79:

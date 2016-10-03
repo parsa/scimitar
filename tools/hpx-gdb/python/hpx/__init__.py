@@ -25,7 +25,7 @@ __commands__ = []
 def build_pretty_printers():
     printer_dict = {}
     # Shorthand for adding a dictionary to printer_dict
-    inc_dict = lambda m: printer_dict.update(m.printer_dict)
+    inc_dict = lambda m: printer_dict.update(m.__printers__)
     # Combine all dictionaries
     inc_dict(backtrace)
     inc_dict(client_base)
@@ -58,6 +58,7 @@ def register_commands():
     build_commands_list()
     for cmd in __commands__:
         cmd()
+
 
 register_commands()
 

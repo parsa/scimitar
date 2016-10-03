@@ -12,11 +12,14 @@
 from . import modes, local_session as _local_s, remote_session as _remote_s
 from .exceptions import *
 from util import config, print_ahead
+
+
 #######################
 # mode: debugging
 #######################
 def process(pids):
     raise CommandImplementationIncompleteError
+
 
 def quit(args):
     raise CommandImplementationIncompleteError

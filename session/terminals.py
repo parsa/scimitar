@@ -24,10 +24,13 @@ import pexpect.pxssh as sp
 import pexpect as lp
 import pty
 
+
 class Terminal():
     pass
 
+
 class LocalTerminal(Terminal):
+
     def __init__():
         self.connection = pty.spawn('')
         #self.agent = lp.spawn('bash')
@@ -40,13 +43,16 @@ class LocalTerminal(Terminal):
                 '}; echo __"cmd_start"__; __cmd_func__; echo __"cmd_end"__; unset -f __cmd_func__'
             )
         else:
-            self.connection.println('echo __"cmd_start"__; %s; echo __"cmd_end"__' % cmd)
+            self.connection.println(
+                'echo __"cmd_start"__; %s; echo __"cmd_end"__' % cmd
+            )
 
         resp = ''
         while not '__cmd_start__\r\n' in resp:
             resp += self.connection.read()
 
-        resp = resp[resp.find('__cmd_start__\r\n') + 15:] # 15 == len('__cmd_start__\r\n')
+        resp = resp[resp.find('__cmd_start__\r\n') + 15:
+                    ] # 15 == len('__cmd_start__\r\n')
 
         while not '_cmd_end__' in resp:
             resp += self.connection.read()
@@ -56,7 +62,9 @@ class LocalTerminal(Terminal):
     def sendline():
         pass
 
+
 class RemoteTerminal(Terminal):
+
     def __init__():
         pass
 

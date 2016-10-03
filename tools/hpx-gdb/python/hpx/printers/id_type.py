@@ -13,7 +13,8 @@ import gdb
 
 _eval_ = gdb.parse_and_eval
 
-printer_dict = {}
+__printers__ = {}
+
 
 class IdTypePrinter(object):
 
@@ -94,6 +95,6 @@ class IdTypePrinter(object):
         return result
 
 
-printer_dict['hpx::naming::id_type'] = IdTypePrinter
+__printers__['hpx::naming::id_type'] = IdTypePrinter
 
 # vim: :ai:sw=4:ts=4:sts=4:et:ft=python:fo=corqj2:sm:tw=79:

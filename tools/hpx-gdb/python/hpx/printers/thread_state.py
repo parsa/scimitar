@@ -13,7 +13,7 @@ import gdb
 
 _eval_ = gdb.parse_and_eval
 
-printer_dict = {}
+__printers__ = {}
 
 
 class CombinedTaggedStatePrinter(object):
@@ -46,7 +46,7 @@ class CombinedTaggedStatePrinter(object):
                 ('tag', str(self.tag)), ]
 
 
-printer_dict['hpx::threads::detail::combined_tagged_state<'
+__printers__['hpx::threads::detail::combined_tagged_state<'
              'enum hpx::threads::thread_state_enum, '
              'enum hpx::threads::thread_state_ex_enum '
              '>'] = CombinedTaggedStatePrinter
@@ -84,7 +84,7 @@ class AtomicCombinedTaggedStatePrinter(object):
                 ('tag', str(self.tag)), ]
 
 
-printer_dict['boost::atomics::atomic<'
+__printers__['boost::atomics::atomic<'
              'hpx::threads::detail::combined_tagged_state<'
              'enum hpx::threads::thread_state_enum, '
              'enum hpx::threads::thread_state_ex_enum'

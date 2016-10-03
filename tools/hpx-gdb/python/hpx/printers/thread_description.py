@@ -13,7 +13,7 @@ import gdb
 
 _eval_ = gdb.parse_and_eval
 
-printer_dict = {}
+__printers__ = {}
 
 
 class ThreadDescriptionPrinter(object):
@@ -39,6 +39,6 @@ class ThreadDescriptionPrinter(object):
         return "thread_description {{ %s }}" % (txt, )
 
 
-printer_dict['hpx::util::thread_description'] = ThreadDescriptionPrinter
+__printers__['hpx::util::thread_description'] = ThreadDescriptionPrinter
 
 # vim: :ai:sw=4:ts=4:sts=4:et:ft=python:fo=corqj2:sm:tw=79:

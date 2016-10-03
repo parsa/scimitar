@@ -27,23 +27,30 @@ from util import config, print_ahead
 # helps us to choose between pxssh/pexpect
 is_this_ssh = False
 
+
 def connect(args):
     pass
+
 
 def end(args):
     pass
 
+
 def raw(args):
     pass
+
 
 def pin(args):
     pass
 
+
 def auto(args):
     pass
 
+
 def job(args):
     pass
+
 
 init_commands = {
     # Operations:
@@ -81,6 +88,7 @@ setting_commands = {
     'ambush': 'ls',
 }
 
+
 def local(args):
     try:
         pids = []
@@ -89,24 +97,32 @@ def local(args):
         _local_s.launch(pids)
         return (modes.to_local, None)
     except ValueError:
-        raise BadArgsError('local', 'Was expecting PIDs, received non-integer(s): {0}'.format(repr(args)))
+        raise BadArgsError(
+            'local', 'Was expecting PIDs, received non-integer(s): {0}'.
+            format(repr(args))
+        )
     _local_s.launch(pids)
     raise CommandImplementationIncompleteError
     #return (modes.local, None)
-    
+
+
 def remote(args):
     if len(args) != 2:
         raise BadArgsError('remote', 'remote <machine_name> <jobid>')
     #print_ahead('Launching remote session')
-    _remote_s.launch(name=args[0], jobid=args[1])
+    _remote_s.launch(name = args[0], jobid = args[1])
     return (modes.remote, None)
-    
+
+
 def quit(args):
     return (modes.quit, None)
 
+
 def debug(args):
-    import pdb; pdb.set_trace()
+    import pdb
+    pdb.set_trace()
     return (modes.offline, None)
+
 
 commands = {
     'local': local,
@@ -114,6 +130,7 @@ commands = {
     'quit': quit,
     'debug': debug,
 }
+
 
 def process(cmd, args):
     if cmd in commands:

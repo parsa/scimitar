@@ -13,7 +13,7 @@ import gdb
 
 _eval_ = gdb.parse_and_eval
 
-printer_dict = {}
+__printers__ = {}
 
 
 class FuturePrinter(object):
@@ -70,6 +70,6 @@ class FuturePrinter(object):
         return result
 
 
-printer_dict['hpx::lcos::(shared_)?future<.+>'] = FuturePrinter
+__printers__['hpx::lcos::(shared_)?future<.+>'] = FuturePrinter
 
 # vim: :ai:sw=4:ts=4:sts=4:et:ft=python:fo=corqj2:sm:tw=79:

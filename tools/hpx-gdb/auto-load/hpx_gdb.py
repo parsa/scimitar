@@ -13,9 +13,11 @@
 import gdb
 import sys
 
+
 def __print_error__(msg):
     sys.stderr.write(msg)
     sys.stderr.flush()
+
 
 try:
     if not sys.modules.has_key('hpx'):

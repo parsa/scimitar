@@ -11,7 +11,8 @@
 #
 from sys import stdout as o
 
-def apply(cmd, fd=o):
+
+def apply(cmd, fd = o):
     o.write(cmd)
     o.flush()
 

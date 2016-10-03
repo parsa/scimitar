@@ -13,6 +13,8 @@ from .exceptions import *
 from . import modes
 from util import configuration, print_ahead
 import pexpect as sp
+
+
 #############################
 # mode: local
 #############################
@@ -20,14 +22,18 @@ def raw(args):
     # Launch GDB
     raise CommandImplementationIncompleteError
 
+
 def attach(args):
     raise CommandImplementationIncompleteError
+
 
 def list(args):
     raise CommandImplementationIncompleteError
 
+
 def quit(args):
     raise CommandImplementationIncompleteError
+
 
 commands = {
     'raw': raw,
@@ -36,9 +42,11 @@ commands = {
     'quit': quit,
 }
 
+
 def process(cmd, args):
     raise CommandImplementationIncompleteError
     #return (modes.local, None)
+
 
 # FIXME: Disabled for now
 # MERGE: local_session (8c110db273af4a81bea68ef8686f1beb)
@@ -52,10 +60,13 @@ def launch(pids):
     #    new_session = _local.LocalSession(pid)
     #_sessions.append(new_session)
 
+
 def quit(args):
     raise CommandImplementationIncompleteError
 
+
 class LocalSession():
+
     def __init__(self):
         self.terminals = None
         self.active_terminal = None
