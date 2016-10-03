@@ -57,7 +57,7 @@ class HPXPrettyPrinterCollection(object):
                 return printer.printer_type(val)
         return None
 
-    def _basic_type(self, type_):
+    def get_basic_type(self, type_):
         while (type_.code == gdb.TYPE_CODE_REF or
                type_.code == gdb.TYPE_CODE_TYPEDEF):
             if type_.code == gdb.TYPE_CODE_REF:
