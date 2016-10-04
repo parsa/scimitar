@@ -23,24 +23,23 @@ class ClientBasePrinter(object):
         # Values
         self.px = self.val['shared_state_']['px']
         self.state_ = self.px['state_']
-        self.print_values = None
+        self.print_values = []
         # Conditions
         if bool(self.px == 0):
-            self.print_values = []
             self.display_string = '(empty)'
         else:
             self.display_string = self.state_
             if bool(self.state_ == 3):
                 self.buf = self.px['storage_']['__data']
                 T_id_type = gdb.lookup_type('hpx::naming::id_type')
-                self.print_values = [('value', self.buf.cast(T_id_type)), ]
+                self.print_values.extend([('value', self.buf.cast(T_id_type)), ])
             elif bool(self.state_ == 5):
                 self.buf = self.px['storage_']['__data']
                 T_exception_ptr = gdb.lookup_type('boost::exception_ptr')
-                self.print_values = [(
+                self.print_value.extend( [(
                     'exception', self.buf.cast(T_exception_ptr)
-                ), ]
-            self.print_values += [('count', self.px['count_']), ]
+                ), ])
+            self.print_values.extend([('count', self.px['count_']), ])
 
     def to_string(self):
         display_string = ''
