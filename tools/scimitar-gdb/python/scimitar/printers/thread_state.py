@@ -27,12 +27,12 @@ class CombinedTaggedStatePrinter(object):
         self.tag = self.state_ & 0xffffffffffff
 
     def to_string(self):
-        txt = 'state=%s, state_ex=%s, tag=%s' % (
+        display_string = 'state=%s, state_ex=%s, tag=%s' % (
             self.state,
             self.state_ex,
             self.tag,
         )
-        return "%s: {{ %s }} %#02x" % (self.type_, txt, self.val.address)
+        return "%s: {{ %s }} %s" % (self.type_, display_string, self.val.address, )
 
     def children(self):
         return [
@@ -66,12 +66,12 @@ class AtomicCombinedTaggedStatePrinter(object):
         self.tag = self.m_storage & 0xffffffffffff
 
     def to_string(self):
-        txt = 'state=%s, state_ex=%s, tag=%s' % (
+        display_string = 'state=%s, state_ex=%s, tag=%s' % (
             self.state,
             self.state_ex,
             self.tag,
         )
-        return "%s: {{ %s }} %#02x" % (self.type_, txt, self.val.address)
+        return "%s: {{ %s }} %s" % (self.type_, display_string, self.val.address, )
 
     def children(self):
         return [

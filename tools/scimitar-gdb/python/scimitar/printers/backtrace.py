@@ -23,9 +23,10 @@ class BacktracePrinter(object):
         self.frames_vis = gdb.default_visualizer(self.frames_)
 
     def to_string(self):
-        return "%s wrapping: {{ %s }}" % (
+        return "%s wrapping: {{ %s }}  %s" % (
             self.type_,
             self.frames_vis.to_string(),
+            self.val.address,
         )
 
     def children(self):

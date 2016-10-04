@@ -38,7 +38,7 @@ class TupleMemberPrinter(object):
         except gdb.error:
             pass
 
-        return "%s: {{ %s }}" % (self.type_, display_string, )
+        return "%s: {{ %s }} %s" % (self.type_, display_string, self.val.address)
 
 
 scimitar.pretty_printers['hpx::util::detail::tuple_member<.+>'] = TupleMemberPrinter

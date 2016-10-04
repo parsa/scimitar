@@ -47,9 +47,9 @@ class FuturePrinter(object):
                 self.value = self.storage_.address.cast(value_t).dereference()
 
     def to_string(self):
-        txt = 'px: %s, state: %s' % (self.px,
+        display_string = 'px: %s, state: %s' % (self.px,
                                      self.state_, )
-        return "%s: {{ %s }}" % (self.type_, txt, )
+        return "%s: {{ %s }} %s" % (self.type_, display_string, self.val.address, )
 
     def children(self):
         result = []

@@ -37,10 +37,11 @@ class GidTypePrinter(object):
         self.dont_cache = bool(self.id_msb_ & 0x00800000)
 
     def to_string(self):
-        return "%s: {{ msb=%#02x lsb=%#02x }}" % (
+        return "%s: {{ msb=%#02x lsb=%#02x }} %s" % (
             self.type_,
             self.id_msb_,
             self.id_lsb_,
+            self.val.address,
         )
 
     def children(self):

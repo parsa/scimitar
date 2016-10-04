@@ -21,46 +21,31 @@ class ClientBasePrinter(object):
         self.val = val
         self.type_ = type_
         # Values
-        self.shared_state_ = self.val['shared_state_']
-        self.px = self.shared_state_['px']
+        self.px = self.val['shared_state_']['px']
         self.state_ = self.px['state_']
+        self.print_values = None
         # Conditions
-        self.is_px_null = bool(_eval_('%s != 0' % self.px))
-        self.is_value = bool(_eval_('%s == 3' % self.state_))
-        self.is_exception = bool(_eval_('%d == 5' % self.state_))
-        if self.is_px_null:
-            self.count_ = self.px['count_']
-
-            if self.is_value:
+        if bool(self.px == 0):
+            self.print_values = []
+            self.display_string = '(empty)'
+        else:
+            self.display_string = self.state_
+            if bool(self.state_ == 3):
                 self.buf = self.px['storage_']['__data']
                 T_id_type = gdb.lookup_type('hpx::naming::id_type')
-                self.value = self.buf.cast(T_id_type)
-            print('ping')
-            if self.is_exception:
+                self.print_values = [('value', self.buf.cast(T_id_type)), ]
+            elif bool(self.state_ == 5):
                 self.buf = self.px['storage_']['__data']
                 T_exception_ptr = gdb.lookup_type('boost::exception_ptr')
-                self.exception = self.buf.cast(T_exception_ptr)
-            print('unping')
+                self.print_values = [('exception', self.buf.cast(T_exception_ptr)), ]
+            self.print_values += [('count', self.px['count_']), ]
 
     def to_string(self):
-        txt = ''
-        if self.is_px_null:
-            txt = str(self.state_)
-        else:
-            txt = 'empty'
-
-        return "%s: {{ %s }}" % (self.type_, txt, )
+        display_string = ''
+        return "%s: {{ %s }} %s" % (self.type_, self.display_string, self.val.address, )
 
     def children(self):
-        result = []
-        if self.is_px_null:
-            if self.is_value:
-                result.extend([('value', str(self.value)), ])
-            elif self.is_exception:
-                result.extend([('exception', str(self.exception)), ])
-            result.extend([('count', str(self.count_)), ])
-
-        return result
+        return self.print_values
 
 
 scimitar.pretty_printers['hpx::components::client_base<(.+)>'] = ClientBasePrinter

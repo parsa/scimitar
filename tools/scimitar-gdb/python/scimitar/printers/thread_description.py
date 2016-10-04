@@ -34,14 +34,14 @@ class ThreadDescriptionPrinter(object):
         self.is_address = bool(self.type_ == 1)
 
     def to_string(self):
-        txt = ''
+        display_string = ''
         if self.is_description:
-            txt = '[desc] {%s}' % self.desc_
+            display_string = '[desc] {%s}' % self.desc_
         else:
-            txt_t = gdb.lookup_type('void').pointer()
-            txt = '[addr] {%s}' % self.addr_.cast(txt_t)
+            display_string = gdb.lookup_type('void').pointer()
+            display_string = '[addr] {%s}' % self.addr_.cast(display_string)
 
-        return "%s {{ %s }}" % (self.type_, txt, )
+        return "%s {{ %s }} %s" % (self.type_, display_string, self.val.address, )
 
 
 scimitar.pretty_printers['hpx::util::thread_description'] = ThreadDescriptionPrinter

@@ -49,16 +49,16 @@ class IdTypePrinter(object):
                 self.locality_id = ((self.id_msb_ >> 32) & 0xffffffff) - 1
 
     def to_string(self):
-        txt = ''
+        display_string = ''
         if self.is_px_null:
-            txt = "msb=%#02x lsb=%#02x type=%s" % (
+            display_string = "msb=%#02x lsb=%#02x type=%s" % (
                 self.id_msb_,
                 self.id_lsb_,
                 self.type__,
             )
         else:
-            txt = 'empty'
-        return "%s: {{ %s }}" % (self.type_, txt, )
+            display_string = 'empty'
+        return "%s: {{ %s }} %s" % (self.type_, display_string, self.val.address, )
 
     def children(self):
         result = []
