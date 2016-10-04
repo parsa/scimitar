@@ -58,7 +58,11 @@ class IdTypePrinter(object):
             )
         else:
             display_string = 'empty'
-        return "%s: {{ %s }} %s" % (self.type_, display_string, self.val.address, )
+        return "%s: {{ %s }} %s" % (
+            self.type_,
+            display_string,
+            self.val.address,
+        )
 
     def children(self):
         result = []

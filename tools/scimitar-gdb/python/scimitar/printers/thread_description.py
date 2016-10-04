@@ -41,9 +41,14 @@ class ThreadDescriptionPrinter(object):
             display_string = gdb.lookup_type('void').pointer()
             display_string = '[addr] {%s}' % self.addr_.cast(display_string)
 
-        return "%s {{ %s }} %s" % (self.type_, display_string, self.val.address, )
+        return "%s {{ %s }} %s" % (
+            self.type_,
+            display_string,
+            self.val.address,
+        )
 
 
-scimitar.pretty_printers['hpx::util::thread_description'] = ThreadDescriptionPrinter
+scimitar.pretty_printers['hpx::util::thread_description'
+                         ] = ThreadDescriptionPrinter
 
 # vim: :ai:sw=4:ts=4:sts=4:et:ft=python:fo=corqj2:sm:tw=79:

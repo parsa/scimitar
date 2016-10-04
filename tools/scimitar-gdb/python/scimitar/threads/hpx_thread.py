@@ -18,24 +18,22 @@ class HPXThread():
     class Context(object):
 
         def __init__(self):
-            self.pc =  gdb.parse_and_eval('$pc')
-            self.r15 =  gdb.parse_and_eval('$r15')
-            self.r14 =  gdb.parse_and_eval('$r14')
-            self.r13 =  gdb.parse_and_eval('$r13')
-            self.r12 =  gdb.parse_and_eval('$r12')
-            self.rdx =  gdb.parse_and_eval('$rdx')
-            self.rax =  gdb.parse_and_eval('$rax')
-            self.rbx =  gdb.parse_and_eval('$rbx')
-            self.rbp =  gdb.parse_and_eval('$rbp')
-            self.sp =  gdb.parse_and_eval('$sp')
+            self.pc = gdb.parse_and_eval('$pc')
+            self.r15 = gdb.parse_and_eval('$r15')
+            self.r14 = gdb.parse_and_eval('$r14')
+            self.r13 = gdb.parse_and_eval('$r13')
+            self.r12 = gdb.parse_and_eval('$r12')
+            self.rdx = gdb.parse_and_eval('$rdx')
+            self.rax = gdb.parse_and_eval('$rax')
+            self.rbx = gdb.parse_and_eval('$rbx')
+            self.rbp = gdb.parse_and_eval('$rbp')
+            self.sp = gdb.parse_and_eval('$sp')
 
         def switch(self):
             prev_ctx = self
 
             def set_reg(reg, value):
-                gdb.execute(
-                    "set $%s = 0x%x" % (reg, value & 2 ** 64 - 1)
-                )
+                gdb.execute("set $%s = 0x%x" % (reg, value & 2 ** 64 - 1))
 
             set_reg('pc', self.pc)
             set_reg('r15', self.r15)
@@ -104,7 +102,9 @@ class HPXThread():
         self.state = combined_state >> 56 & 0xff
         self.state = self.state.cast(current_state_type)
 
-        current_state_ex_type = gdb.lookup_type('hpx::threads::thread_state_ex_enum')
+        current_state_ex_type = gdb.lookup_type(
+            'hpx::threads::thread_state_ex_enum'
+        )
         self.state_ex = combined_state >> 48 & 0xff
         self.state_ex = self.state_ex.cast(current_state_ex_type)
 

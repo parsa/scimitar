@@ -20,6 +20,7 @@ import re
 class RegexPrettyPrinterCollection(object):
 
     class RegexSubprinter(object):
+
         def __init__(self, name, pattern, printer_type):
             self.name = name
             self.enabled = True
@@ -35,7 +36,9 @@ class RegexPrettyPrinterCollection(object):
     def add_printer(self, printer_name, regex_pattern, printer_type):
         if not self.subprinters:
             self.subprinters = []
-        self.subprinters.append(self.RegexSubprinter(printer_name, regex_pattern, printer_type))
+        self.subprinters.append(
+            self.RegexSubprinter(printer_name, regex_pattern, printer_type)
+        )
 
     def __call__(self, val):
         typename = self.get_basic_type(val.type).tag
@@ -48,14 +51,15 @@ class RegexPrettyPrinterCollection(object):
         return None
 
     def get_basic_type(self, type_):
-        while (type_.code == gdb.TYPE_CODE_REF or
-               type_.code == gdb.TYPE_CODE_TYPEDEF):
+        while (
+            type_.code == gdb.TYPE_CODE_REF or
+            type_.code == gdb.TYPE_CODE_TYPEDEF
+        ):
             if type_.code == gdb.TYPE_CODE_REF:
                 type_ = type_.target()
             else:
                 type_ = type_.strip_typedefs()
         return type_.unqualified()
-    
 
 
 def register_pretty_printer(obj, printer):

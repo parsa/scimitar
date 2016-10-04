@@ -20,10 +20,15 @@ class CombinedTaggedStatePrinter(object):
         self.type_ = type_
         # Values
         self.state_ = self.val['state_']
-        thread_state_enum_t = gdb.lookup_type('hpx::threads::thread_state_enum')
+        thread_state_enum_t = gdb.lookup_type(
+            'hpx::threads::thread_state_enum'
+        )
         self.state = ((self.state_ >> 56) & 0xff).cast(thread_state_enum_t)
-        thread_state_ex_enum_t = gdb.lookup_type('hpx::threads::thread_state_ex_enum')
-        self.state_ex = ((self.state_ >> 48) & 0xff).cast(thread_state_ex_enum_t)
+        thread_state_ex_enum_t = gdb.lookup_type(
+            'hpx::threads::thread_state_ex_enum'
+        )
+        self.state_ex = ((self.state_ >> 48) &
+                         0xff).cast(thread_state_ex_enum_t)
         self.tag = self.state_ & 0xffffffffffff
 
     def to_string(self):
@@ -32,22 +37,25 @@ class CombinedTaggedStatePrinter(object):
             self.state_ex,
             self.tag,
         )
-        return "%s: {{ %s }} %s" % (self.type_, display_string, self.val.address, )
+        return "%s: {{ %s }} %s" % (
+            self.type_,
+            display_string,
+            self.val.address,
+        )
 
     def children(self):
-        return [
-            ('state', self.state, ),
-            ('state_ex', self.state_ex, ),
-            ('tag', self.tag, ),
-        ]
+        return [('state',
+                 self.state, ),
+                ('state_ex',
+                 self.state_ex, ),
+                ('tag',
+                 self.tag, ), ]
 
 
-scimitar.pretty_printers[
-    'hpx::threads::detail::combined_tagged_state<'
-        'enum hpx::threads::thread_state_enum, '
-        'enum hpx::threads::thread_state_ex_enum '
-    '>'
-] = CombinedTaggedStatePrinter
+scimitar.pretty_printers['hpx::threads::detail::combined_tagged_state<'
+                         'enum hpx::threads::thread_state_enum, '
+                         'enum hpx::threads::thread_state_ex_enum '
+                         '>'] = CombinedTaggedStatePrinter
 
 
 class AtomicCombinedTaggedStatePrinter(object):
@@ -57,11 +65,16 @@ class AtomicCombinedTaggedStatePrinter(object):
         self.type_ = type_
         # Values
         self.m_storage = self.val['m_storage']
-        thread_state_enum_t = gdb.lookup_type('hpx::threads::thread_state_enum')
+        thread_state_enum_t = gdb.lookup_type(
+            'hpx::threads::thread_state_enum'
+        )
         self.state = ((self.m_storage >> 56) & 0xff).cast(thread_state_enum_t)
 
-        thread_state_ex_enum_t = gdb.lookup_type('hpx::threads::thread_state_ex_enum')
-        self.state_ex = ((self.state_ >> 48) & 0xff).cast(thread_state_ex_enum_t)
+        thread_state_ex_enum_t = gdb.lookup_type(
+            'hpx::threads::thread_state_ex_enum'
+        )
+        self.state_ex = ((self.state_ >> 48) &
+                         0xff).cast(thread_state_ex_enum_t)
 
         self.tag = self.m_storage & 0xffffffffffff
 
@@ -71,24 +84,26 @@ class AtomicCombinedTaggedStatePrinter(object):
             self.state_ex,
             self.tag,
         )
-        return "%s: {{ %s }} %s" % (self.type_, display_string, self.val.address, )
+        return "%s: {{ %s }} %s" % (
+            self.type_,
+            display_string,
+            self.val.address,
+        )
 
     def children(self):
-        return [
-            ('state', self.state, ),
-            ('state_ex', self.state_ex, ),
-            ('tag', self.tag, ),
-        ]
+        return [('state',
+                 self.state, ),
+                ('state_ex',
+                 self.state_ex, ),
+                ('tag',
+                 self.tag, ), ]
 
 
-
-scimitar.pretty_printers[
-    'boost::atomics::atomic<'
-        'hpx::threads::detail::combined_tagged_state<'
-            'enum hpx::threads::thread_state_enum, '
-            'enum hpx::threads::thread_state_ex_enum'
-        '>'
-    '>'
-] = AtomicCombinedTaggedStatePrinter
+scimitar.pretty_printers['boost::atomics::atomic<'
+                         'hpx::threads::detail::combined_tagged_state<'
+                         'enum hpx::threads::thread_state_enum, '
+                         'enum hpx::threads::thread_state_ex_enum'
+                         '>'
+                         '>'] = AtomicCombinedTaggedStatePrinter
 
 # vim: :ai:sw=4:ts=4:sts=4:et:ft=python:fo=corqj2:sm:tw=79:

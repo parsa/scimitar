@@ -37,17 +37,24 @@ class ClientBasePrinter(object):
             elif bool(self.state_ == 5):
                 self.buf = self.px['storage_']['__data']
                 T_exception_ptr = gdb.lookup_type('boost::exception_ptr')
-                self.print_values = [('exception', self.buf.cast(T_exception_ptr)), ]
+                self.print_values = [(
+                    'exception', self.buf.cast(T_exception_ptr)
+                ), ]
             self.print_values += [('count', self.px['count_']), ]
 
     def to_string(self):
         display_string = ''
-        return "%s: {{ %s }} %s" % (self.type_, self.display_string, self.val.address, )
+        return "%s: {{ %s }} %s" % (
+            self.type_,
+            self.display_string,
+            self.val.address,
+        )
 
     def children(self):
         return self.print_values
 
 
-scimitar.pretty_printers['hpx::components::client_base<(.+)>'] = ClientBasePrinter
+scimitar.pretty_printers['hpx::components::client_base<(.+)>'
+                         ] = ClientBasePrinter
 
 # vim: :ai:sw=4:ts=4:sts=4:et:ft=python:fo=corqj2:sm:tw=79:

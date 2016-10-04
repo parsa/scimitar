@@ -48,8 +48,12 @@ class FuturePrinter(object):
 
     def to_string(self):
         display_string = 'px: %s, state: %s' % (self.px,
-                                     self.state_, )
-        return "%s: {{ %s }} %s" % (self.type_, display_string, self.val.address, )
+                                                self.state_, )
+        return "%s: {{ %s }} %s" % (
+            self.type_,
+            display_string,
+            self.val.address,
+        )
 
     def children(self):
         result = []

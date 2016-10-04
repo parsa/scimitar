@@ -61,7 +61,8 @@ class HPXListThreadsCommand(gdb.Command):
                                      ).dereference()
 
     def invoke(self, arg, from_tty):
-        runtime = gdb.parse_and_eval("hpx::runtime::runtime_")["ptr_"].dereference()
+        runtime = gdb.parse_and_eval("hpx::runtime::runtime_")["ptr_"
+                                                               ].dereference()
         thread_manager_ptr = runtime.cast(runtime.dynamic_type
                                           )["thread_manager_"]['px']
         thread_manager = thread_manager_ptr.cast(
@@ -106,7 +107,9 @@ class HPXListThreadsCommand(gdb.Command):
             count = count + 1
 
         print('Low priority queue:')
-        thread_map = stl.StdUnorderedSet(scheduler['low_priority_queue_']['thread_map_'])
+        thread_map = stl.StdUnorderedSet(
+            scheduler['low_priority_queue_']['thread_map_']
+        )
         for k, v in thread_map:
             thread = HPXThread(v['px'])
 

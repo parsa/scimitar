@@ -39,7 +39,9 @@ class TuplePrinter(object):
     def to_string(self):
         display_string = ', '.join(self.items)
 
-        return "%s {{ %s }} %s" % (self.type_, display_string, self.val.address)
+        return "%s {{ %s }} %s" % (
+            self.type_, display_string, self.val.address
+        )
 
     def display_hint(self):
         return 'map'
