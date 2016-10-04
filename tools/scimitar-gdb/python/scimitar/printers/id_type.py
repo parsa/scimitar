@@ -12,8 +12,6 @@
 import gdb
 import scimitar
 
-_eval_ = gdb.parse_and_eval
-
 
 class IdTypePrinter(object):
 
@@ -24,16 +22,16 @@ class IdTypePrinter(object):
         self.px = val['gid_']['px']
         self.id_msb_ = self.px['id_msb_']
         self.id_lsb_ = self.px['id_lsb_']
-        self.type__ = self.px['type_']
+        self.type_management = self.px['type_']
         self.m_storage = self.px['count_']['value_']['m_storage']
         # Conditions
+        # enum hpx::naming::detail::id_type_management
+        #   unknown_deleter = -1
+        #   unmanaged = 0
+        #   managed = 1
+        #   managed_move_credit = 2
         self.is_px_null = bool(self.px != 0)
-        self.is_not_unmanaged = bool(
-            _eval_(
-                '(%s != hpx::naming::id_type::unmanaged) != 0' %
-                (self.type__, )
-            )
-        )
+        self.is_not_unmanaged = bool(self.type_management != 0)
         self.cond_3 = bool(((self.id_msb_ >> 32) & 0xffffffff) != 0)
         if self.is_px_null:
             self.msb = self.id_msb_ & 0x7fffff
@@ -54,7 +52,7 @@ class IdTypePrinter(object):
             display_string = "msb=%#02x lsb=%#02x type=%s" % (
                 self.id_msb_,
                 self.id_lsb_,
-                self.type__,
+                self.type_management,
             )
         else:
             display_string = 'empty'
@@ -76,7 +74,7 @@ class IdTypePrinter(object):
                 result.extend([('locality_id', str(self.locality_id)), ])
             result.extend([('msb', '%#02x' % self.msb),
                            ('lsb', '%#02x' % self.lsb),
-                           ('type', str(self.type__)),
+                           ('type', str(self.type_management)),
                            ('is_locked', str(self.is_locked)),
                            ('dont_cache', str(self.dont_cache)),
                            ('count', str(self.m_storage)), ])
