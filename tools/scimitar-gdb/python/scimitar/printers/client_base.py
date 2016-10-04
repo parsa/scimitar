@@ -31,13 +31,13 @@ class ClientBasePrinter(object):
             self.display_string = self.state_
             if bool(self.state_ == 3):
                 self.buf = self.px['storage_']['__data']
-                T_id_type = gdb.lookup_type('hpx::naming::id_type')
-                self.print_values.extend([('value', self.buf.cast(T_id_type)), ])
+                T_id_type = gdb.lookup_type('hpx::naming::id_type').pointer()
+                self.print_values.extend([('value', self.buf.cast(T_id_type).dereference()), ])
             elif bool(self.state_ == 5):
                 self.buf = self.px['storage_']['__data']
-                T_exception_ptr = gdb.lookup_type('boost::exception_ptr')
+                T_exception_ptr = gdb.lookup_type('boost::exception_ptr').pointer()
                 self.print_value.extend( [(
-                    'exception', self.buf.cast(T_exception_ptr)
+                    'exception', self.buf.cast(T_exception_ptr).dereference()
                 ), ])
             self.print_values.extend([('count', self.px['count_']), ])
 
