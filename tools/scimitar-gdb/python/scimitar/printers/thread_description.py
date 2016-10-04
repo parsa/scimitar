@@ -17,25 +17,31 @@ _eval_ = gdb.parse_and_eval
 
 class ThreadDescriptionPrinter(object):
 
-    def __init__(self, val):
+    def __init__(self, val, type_):
         self.val = val
+        self.type_ = type_
         # Values
         self.type_ = self.val['type_']
         self.data_ = self.val['data_']
         self.desc_ = self.data_['desc_']
         self.addr_ = self.data_['addr_']
+
         # Conditions
-        self.is_type_0 = bool(_eval_('%s == 0' % self.type_))
-        self.is_type_1 = bool(_eval_('%s == 1' % self.type_))
+        # enum hpx::util::thread_description::data_type
+        #   data_type_description = 0
+        #   data_type_address = 1
+        self.is_description = bool(self.type_ == 0)
+        self.is_address = bool(self.type_ == 1)
 
     def to_string(self):
         txt = ''
-        if self.is_type_0:
+        if self.is_description:
             txt = '[desc] {%s}' % self.desc_
-        elif self.is_type_1:
-            txt = '[addr] {%s}' % _eval_('(void*)%s' % self.addr_)
+        else:
+            txt_t = gdb.lookup_type('void').pointer()
+            txt = '[addr] {%s}' % self.addr_.cast(txt_t)
 
-        return "thread_description {{ %s }}" % (txt, )
+        return "%s {{ %s }}" % (self.type_, txt, )
 
 
 scimitar.pretty_printers['hpx::util::thread_description'] = ThreadDescriptionPrinter

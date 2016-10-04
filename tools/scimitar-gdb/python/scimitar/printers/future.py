@@ -12,13 +12,12 @@
 import gdb
 import scimitar
 
-_eval_ = gdb.parse_and_eval
-
 
 class FuturePrinter(object):
 
-    def __init__(self, val):
+    def __init__(self, val, type_):
         self.val = val
+        self.type_ = type_
         # Values
         self.px = self.val['shared_state_']['px']
         self.state_ = self.px['state_']
@@ -26,46 +25,44 @@ class FuturePrinter(object):
         # Template type
         self.tmpl = str(self.val.type.template_argument(0))
         # Conditions
+        # enum hpx::lcos::detail::future_data<T>::state:
+        #   empty = 0
+        #   ready = 1
+        #   value = 3
+        #   exception = 5
         self.is_void = self.tmpl == 'void'
-        self.is_state_5 = bool(_eval_('%d == 5' % (self.state_, )))
-        self.is_state_3 = bool(_eval_('%d == 3' % (self.state_, )))
+        self.is_exception = bool(self.state_ == 5)
+        self.is_value = bool(self.state_ == 3)
 
         if self.is_void:
-            if self.is_state_5:
-                self.value = _eval_(
-                    '*((boost::exception_ptr*)(%s))' %
-                    (self.storage_.address, )
-                )
+            if self.is_exception:
+                value_t = gdb.lookup_type('boost::exception_ptr').pointer()
+                self.value = self.storage_.address.cast(value_t).dereference()
         else:
-            if self.is_state_3:
-                self.value = _eval_(
-                    '*((%s *)%s)' % (value_t.tag,
-                                     self.storage_.address, )
-                )
-            if self.is_state_5:
-                self.value = _eval_(
-                    '*((boost::exception_ptr*)(%s))' %
-                    (self.storage_.address, )
-                )
+            if self.is_value:
+                value_t = gdb.lookup_type(self.tmpl).pointer()
+                self.value = self.storage_.address.cast(value_t).dereference()
+            if self.is_exception:
+                value_t = gdb.lookup_type('boost::exception_ptr').pointer()
+                self.value = self.storage_.address.cast(value_t).dereference()
 
     def to_string(self):
         txt = 'px: %s, state: %s' % (self.px,
                                      self.state_, )
-        return "future: {{ %s }}" % (txt, )
+        return "%s: {{ %s }}" % (self.type_, txt, )
 
     def children(self):
         result = []
         if self.is_void:
-            if self.is_state_5:
-                result.extend([('value', str(self.value)), ])
+            if self.is_exception:
+                result.extend([('value', self.value), ])
         else:
-            if self.is_state_3:
-                value_t = gdb.lookup_type(self.tmpl)
-                result.extend([('value', str(self.value)), ])
-            elif self.is_state_5:
+            if self.is_value:
+                result.extend([('value', self.value), ])
+            elif self.is_exception:
                 result.extend([('value', self.value), ])
             else:
-                result.extend([('value', 'N/A'), ])
+                result.extend([('value', '(unknown)'), ])
         return result
 
 

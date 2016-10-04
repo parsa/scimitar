@@ -12,51 +12,33 @@
 import gdb
 import scimitar
 
-_eval_ = gdb.parse_and_eval
-
 
 class GidTypePrinter(object):
 
-    def __init__(self, val):
+    def __init__(self, val, type_):
         self.val = val
+        self.type_ = type_
         # Values
         self.id_msb_ = self.val['id_msb_']
         self.id_lsb_ = self.val['id_lsb_']
         # Conditions
-        self.cond_1 = bool(
-            _eval_('(%d & 0x40000000ull) != 0' % (self.id_msb_, ))
-        )
-        self.cond_2 = bool(
-            _eval_('((%s >> 32) & 0xffffffffull) != 0' % self.id_msb_)
-        )
+        self.cond_1 = bool(self.id_msb_ & 0x40000000 != 0)
+        self.cond_2 = bool((self.id_msb_ >> 32) & 0xffffffff != 0)
         if self.cond_1:
-            self.log2credits = _eval_(
-                '(%d >> 24) & 0x1full' % (self.id_msb_, )
-            )
-            self.credits = _eval_(
-                '1ull << ((%d >> 24) & 0x1full)' % (self.id_msb_, )
-            )
-            self.was_split = _eval_(
-                '(%d & 0x80000000ull) ? true : false' % (self.id_msb_, )
-            )
+            self.log2credits = (self.id_msb_ >> 24) & 0x1f
+            self.credits = 1 << (self.id_msb_ >> 24) & 0x1f
+            self.was_split = bool(self.id_msb_ & 0x80000000)
         if self.cond_2:
-            self.locality_id = _eval_(
-                '((%s >> 32) & 0xffffffffull) - 1' % (self.id_msb_, )
-            )
-        self.msb = _eval_('%s & 0x7fffffull' % (self.id_msb_, ))
-        self.lsb = _eval_('%s' % (self.id_lsb_), )
-        self.has_credit = _eval_(
-            '(%s & 0x40000000ull) ? true : false' % (self.id_msb_, )
-        )
-        self.is_locked = _eval_(
-            '(%s & 0x20000000ull) ? true : false' % (self.id_msb_, )
-        )
-        self.dont_cache = _eval_(
-            '(%s & 0x00800000ull) ? true : false' % (self.id_msb_, )
-        )
+            self.locality_id = ((self.id_msb_ >> 32) & 0xffffffff) - 1
+        self.msb = self.id_msb_ & 0x7fffff
+        self.lsb = self.id_lsb_
+        self.has_credit = bool(self.id_msb_ & 0x40000000)
+        self.is_locked = bool(self.id_msb_ & 0x20000000)
+        self.dont_cache = bool(self.id_msb_ & 0x00800000)
 
     def to_string(self):
-        return "gid_type: {{ msb=%#02x lsb=%#02x }}" % (
+        return "%s: {{ msb=%#02x lsb=%#02x }}" % (
+            self.type_,
             self.id_msb_,
             self.id_lsb_,
         )

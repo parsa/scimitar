@@ -10,6 +10,7 @@
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 #
 import gdb
+import re
 
 
 class HPXThread():
@@ -17,93 +18,100 @@ class HPXThread():
     class Context(object):
 
         def __init__(self):
-            self._registers = {
-                'pc': None,
-                'r15': None,
-                'r14': None,
-                'r13': None,
-                'r12': None,
-                'rdx': None,
-                'rax': None,
-                'rbx': None,
-                'rbp': None,
-                'sp': None,
-            }
-
-            for reg in self._registers.iterkeys():
-                self._registers[reg] = gdb.parse_and_eval('$' + reg)
-
-        def __getattr__(self, name):
-            if name == '_registers':
-                return super(Context, self).__getattr__(name)
-            return self._registers[name]
-
-        def __setattr__(self, name, value):
-            if name == '_registers':
-                super(Context, self).__setattr__(name, value)
-            elif self._registers.has_key(name):
-                self._registers[name] = value
-            else:
-                raise Exception
-
-        def __getitem__(self, key):
-            return self._registers[key]
-
-        def __setitem__(self, key, value):
-            self._registers[key] = value
+            self.pc =  gdb.parse_and_eval('$pc')
+            self.r15 =  gdb.parse_and_eval('$r15')
+            self.r14 =  gdb.parse_and_eval('$r14')
+            self.r13 =  gdb.parse_and_eval('$r13')
+            self.r12 =  gdb.parse_and_eval('$r12')
+            self.rdx =  gdb.parse_and_eval('$rdx')
+            self.rax =  gdb.parse_and_eval('$rax')
+            self.rbx =  gdb.parse_and_eval('$rbx')
+            self.rbp =  gdb.parse_and_eval('$rbp')
+            self.sp =  gdb.parse_and_eval('$sp')
 
         def switch(self):
-            prev_ctx = HPXThread.Context()
+            prev_ctx = self
 
-            for rk, rv in self._registers.iteritems():
+            def set_reg(reg, value):
                 gdb.execute(
-                    "set $%s = 0x%x" % (rk, int("%d" % rv) & (2 ** 64 - 1))
+                    "set $%s = 0x%x" % (reg, value & 2 ** 64 - 1)
                 )
+
+            set_reg('pc', self.pc)
+            set_reg('r15', self.r15)
+            set_reg('r14', self.r14)
+            set_reg('r13', self.r13)
+            set_reg('r12', self.r12)
+            set_reg('rdx', self.rdx)
+            set_reg('rax', self.rax)
+            set_reg('rbx', self.rbx)
+            set_reg('rbp', self.rbp)
+            set_reg('sp', self.sp)
 
             return prev_ctx
 
-    def __init__(self, thread_data_base):
-        self.base_type = gdb.lookup_type("hpx::threads::thread_data_base")
-        if thread_data_base.type != self.base_type.pointer():
-            if thread_data_base.type == self.base_type:
-                thread_data_base = thread_data_base.address()
-            else:
-                thread_data_base = thread_data_base.reinterpret_cast(
-                    self.base_type.pointer()
-                )
+    def __init__(self, thread_data):
+        self.thread_data = thread_data
 
-        self.thread_data = thread_data_base.cast(
-            thread_data_base.dynamic_type
-        ).dereference()
+        #  current_state_ = {
+        #    <boost::atomics::detail::base_atomic
+        #       <hpx::threads::detail::combined_tagged_state
+        #           <hpx::threads::thread_state_enum,
+        #           hpx::threads::thread_state_ex_enum
+        #       >, void>
+        #    > = { m_storage = 360569445166350338 }, <No data fields>
+        #  }, 
+        #  component_id_ = 8198320, 
+        #  description_ = thread_description {{ [desc] {0x7ffff4aa0cb5 "call_startup_functions_action"} }}, 
+        #  lco_description_ = thread_description {{ [desc] {0x7ffff4918a9d "<unknown>"} }}, 
+        #  parent_locality_id_ = 0, 
+        #  parent_thread_id_ = 0x7f3090, 
+        #  parent_thread_phase_ = 1, 
+        #  marked_state_ = hpx::threads::unknown, 
+        #  priority_ = hpx::threads::thread_priority_normal, 
+        #  requested_interrupt_ = false, 
+        #  enabled_interrupt_ = true, 
+        #  ran_exit_funcs_ = false, 
+        #  exit_funcs_ = std::deque with 0 elements, 
+        #  scheduler_base_ = 0x7cf5b8, 
+        #  count_ = {
+        #    value_ = {
+        #      <boost::atomics::detail::base_atomic<long, int>> = {
+        #        m_storage = 1
+        #      }, <No data fields>
+        #    }
+        #  }, 
+        #  stacksize_ = 131072, 
+        #  coroutine_ = {
+        #    m_pimpl = (boost::intrusive_ptr<hpx::threads::coroutines::detail::coroutine_impl>) 0x7fffee728180
+        #  }, 
+        #  pool_ = 0x7e9a60
+        #}
 
         context_impl = self.thread_data['coroutine_']['m_pimpl']['px']
         self.stack_end = context_impl['m_stack'] + context_impl['m_stack_size']
         self.stack_start = context_impl['m_stack']
         self.m_sp = context_impl['m_sp']
 
-        assert thread_data_base == context_impl['m_thread_id']
-        self.id = thread_data_base #context_impl['m_thread_id']
+        self.id = context_impl['m_thread_id']
         self.parent_id = self.thread_data['parent_thread_id_']
         self.description = self.thread_data['description_']
         self.lco_description = self.thread_data['lco_description_']
 
-        current_state = self.thread_data['current_state_']
+        combined_state = self.thread_data['current_state_']['m_storage']
 
-        tagged_state_type = current_state.type.template_argument(0)
-        state_enum_type = tagged_state_type.template_argument(0)
-        self.state = current_state['m_storage'] >> 24
-        self.state = self.state.cast(state_enum_type)
+        current_state_type = gdb.lookup_type('hpx::threads::thread_state_enum')
+        self.state = combined_state >> 56 & 0xff
+        self.state = self.state.cast(current_state_type)
 
-        current_state_ex = self.thread_data['current_state_ex_']
-        tagged_state_ex_type = current_state_ex.type.template_argument(0)
-        state_ex_enum_type = tagged_state_ex_type.template_argument(0)
-        self.state_ex = current_state_ex['m_storage'] >> 24
-        self.state_ex = self.state_ex.cast(state_ex_enum_type)
+        current_state_ex_type = gdb.lookup_type('hpx::threads::thread_state_ex_enum')
+        self.state_ex = combined_state >> 48 & 0xff
+        self.state_ex = self.state_ex.cast(current_state_ex_type)
 
         self.size_t = gdb.lookup_type("std::size_t")
         stack = self.m_sp.reinterpret_cast(self.size_t)
 
-        self.context = self.Context()
+        self.context = HPXThread.Context()
         self.context.pc = self.deref_stack(stack + (8 * 8))
         self.context.r15 = self.deref_stack(stack + (8 * 0))
         self.context.r14 = self.deref_stack(stack + (8 * 1))
@@ -152,8 +160,10 @@ class HPXThread():
                                       ) > self.stack_end:
             print(" This thread has a stack overflow")
         print("  parent thread = %s" % self.parent_id)
-        print("  description = " + self.description.string())
-        print("  lco_description = " + self.lco_description.string())
+        print("  description = %s" % self.description)
+        print(self.lco_description.type)
+        print(self.lco_description.address)
+        print("  lco_description = %s" % self.lco_description)
         print("  state = %s" % self.state)
         print("  state_ex = %s" % self.state_ex)
         print("  pc = %s" % self.pc_string)

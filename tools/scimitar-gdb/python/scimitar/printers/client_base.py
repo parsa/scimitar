@@ -17,8 +17,9 @@ _eval_ = gdb.parse_and_eval
 
 class ClientBasePrinter(object):
 
-    def __init__(self, val):
+    def __init__(self, val, type_):
         self.val = val
+        self.type_ = type_
         # Values
         self.shared_state_ = self.val['shared_state_']
         self.px = self.shared_state_['px']
@@ -48,7 +49,7 @@ class ClientBasePrinter(object):
         else:
             txt = 'empty'
 
-        return "client_base: {{ %s }}" % (txt, )
+        return "%s: {{ %s }}" % (self.type_, txt, )
 
     def children(self):
         result = []

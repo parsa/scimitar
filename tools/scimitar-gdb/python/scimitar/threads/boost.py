@@ -24,20 +24,18 @@ class Unordered(object):
         self._init_types()
 
     def __len__(self):
-        table = self.value['table_']
-        if table['buckets_']:
-            return int(table['size_'])
+        if self.value['_M_buckets']:
+            return int(self.value['_M_element_count'])
         else:
             return 0
 
     def __iter__(self):
-        table = self.value['table_']
-        buckets = table['buckets_']
+        buckets = self.value['_M_buckets']
         if buckets:
-            start_bucket = buckets + table['bucket_count_']
-            start_node = start_bucket.dereference()['next_']
+            start_bucket = buckets + self.value['_M_bucket_count']
+            start_node = start_bucket.dereference()['_M_nxt']
             if self.extra_node:
-                start_node = start_node.dereference()['next_']
+                start_node = start_node.dereference()['_M_nxt']
             return self._iterator(
                 start_node, self.node_type, self.value_type, self.extractor
             )

@@ -12,24 +12,19 @@
 import gdb
 import scimitar
 
-_eval_ = gdb.parse_and_eval
-
 
 class CombinedTaggedStatePrinter(object):
 
-    def __init__(self, val):
+    def __init__(self, val, type_):
         self.val = val
+        self.type_ = type_
         # Values
         self.state_ = self.val['state_']
-        self.state = _eval_(
-            '(hpx::threads::thread_state_enum)((%s >> 56) & 0xff)' %
-            self.state_
-        )
-        self.state_ex = _eval_(
-            '(hpx::threads::thread_state_ex_enum)((%s >> 48) & 0xff)' %
-            self.state_
-        )
-        self.tag = _eval_('%s & 0xffffffffffff' % self.state_)
+        thread_state_enum_t = gdb.lookup_type('hpx::threads::thread_state_enum')
+        self.state = ((self.state_ >> 56) & 0xff).cast(thread_state_enum_t)
+        thread_state_ex_enum_t = gdb.lookup_type('hpx::threads::thread_state_ex_enum')
+        self.state_ex = ((self.state_ >> 48) & 0xff).cast(thread_state_ex_enum_t)
+        self.tag = self.state_ & 0xffffffffffff
 
     def to_string(self):
         txt = 'state=%s, state_ex=%s, tag=%s' % (
@@ -37,12 +32,14 @@ class CombinedTaggedStatePrinter(object):
             self.state_ex,
             self.tag,
         )
-        return "combined_tagged_state: {{ %s }}" % (txt, )
+        return "%s: {{ %s }} %#02x" % (self.type_, txt, self.val.address)
 
     def children(self):
-        return [('state', str(self.state)),
-                ('state_ex', str(self.state_ex)),
-                ('tag', str(self.tag)), ]
+        return [
+            ('state', self.state, ),
+            ('state_ex', self.state_ex, ),
+            ('tag', self.tag, ),
+        ]
 
 
 scimitar.pretty_printers[
@@ -55,19 +52,18 @@ scimitar.pretty_printers[
 
 class AtomicCombinedTaggedStatePrinter(object):
 
-    def __init__(self, val):
+    def __init__(self, val, type_):
         self.val = val
+        self.type_ = type_
         # Values
         self.m_storage = self.val['m_storage']
-        self.state = _eval_(
-            '(hpx::threads::thread_state_enum)((%s >> 56) & 0xff)' %
-            self.m_storage
-        )
-        self.state_ex = _eval_(
-            '(hpx::threads::thread_state_ex_enum)((%s >> 48) & 0xff)' %
-            self.m_storage
-        )
-        self.tag = _eval_('%s & 0xffffffffffff' % self.m_storage)
+        thread_state_enum_t = gdb.lookup_type('hpx::threads::thread_state_enum')
+        self.state = ((self.m_storage >> 56) & 0xff).cast(thread_state_enum_t)
+
+        thread_state_ex_enum_t = gdb.lookup_type('hpx::threads::thread_state_ex_enum')
+        self.state_ex = ((self.state_ >> 48) & 0xff).cast(thread_state_ex_enum_t)
+
+        self.tag = self.m_storage & 0xffffffffffff
 
     def to_string(self):
         txt = 'state=%s, state_ex=%s, tag=%s' % (
@@ -75,14 +71,15 @@ class AtomicCombinedTaggedStatePrinter(object):
             self.state_ex,
             self.tag,
         )
-        return  \
-            "atomic<combined_tagged_state>: {{ %s }} %#02x" \
-            % (txt, self.val.address)
+        return "%s: {{ %s }} %#02x" % (self.type_, txt, self.val.address)
 
     def children(self):
-        return [('state', str(self.state)),
-                ('state_ex', str(self.state_ex)),
-                ('tag', str(self.tag)), ]
+        return [
+            ('state', self.state, ),
+            ('state_ex', self.state_ex, ),
+            ('tag', self.tag, ),
+        ]
+
 
 
 scimitar.pretty_printers[

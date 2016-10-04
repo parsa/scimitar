@@ -44,7 +44,7 @@ class RegexPrettyPrinterCollection(object):
 
         for printer in self.subprinters:
             if printer.enabled and printer.compiled_pattern.search(typename):
-                return printer.printer_type(val)
+                return printer.printer_type(val, str(val.type))
         return None
 
     def get_basic_type(self, type_):

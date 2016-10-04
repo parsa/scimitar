@@ -13,13 +13,11 @@ import gdb
 import scimitar
 
 
-class TuplePrinter(object):
+class TupleMemberPrinter(object):
 
     def __init__(self, val, type_):
         self.val = val
         self.type_ = type_
-        # Values
-        self._impl = self.val['_impl']
         # Get the template types
         self.tmpl = []
         for i in range(10):
@@ -28,31 +26,21 @@ class TuplePrinter(object):
             except RuntimeError:
                 break
 
-        self.items = []
-        for i, t in enumerate(self.tmpl):
-            #Tp = gdb.lookup_type(
-            #    '(hpx::util::detail::tuple_member<%s,%s,void>&)' % (i, t)
-            #)
-            #self.items.append(str(t.cast(Tp)))
-            self.items.append(str(t))
-
     def to_string(self):
-        txt = ', '.join(self.items)
+        display_string = ''
+        try:
+            tmpl_t = gdb.lookup_type(self.tmpl[1]).pointer()
+            display_string = str(self.val.cast(tmpl_t).dereference())
+        except gdb.error:
+            pass
+        try:
+            display_string = str(self.val['_value'])
+        except gdb.error:
+            pass
 
-        return "%s {{ %s }}" % (self.type_, txt, )
-
-    def display_hint(self):
-        return 'map'
-
-    def children(self):
-        result = []
-        for i, j in enumerate(self.items):
-            result += [(str(i),
-                        j, )]
-
-        return result
+        return "%s: {{ %s }}" % (self.type_, display_string, )
 
 
-scimitar.pretty_printers['hpx::util::tuple<.+>'] = TuplePrinter
+scimitar.pretty_printers['hpx::util::detail::tuple_member<.+>'] = TupleMemberPrinter
 
 # vim: :ai:sw=4:ts=4:sts=4:et:ft=python:fo=corqj2:sm:tw=79:
