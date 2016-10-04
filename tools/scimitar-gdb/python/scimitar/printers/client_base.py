@@ -12,8 +12,6 @@
 import gdb
 import scimitar
 
-_eval_ = gdb.parse_and_eval
-
 
 class ClientBasePrinter(object):
 
