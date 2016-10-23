@@ -18,22 +18,30 @@ class HPXThread():
     class Context(object):
 
         def __init__(self):
-            self.pc = gdb.parse_and_eval('$pc')
-            self.r15 = gdb.parse_and_eval('$r15')
-            self.r14 = gdb.parse_and_eval('$r14')
-            self.r13 = gdb.parse_and_eval('$r13')
-            self.r12 = gdb.parse_and_eval('$r12')
-            self.rdx = gdb.parse_and_eval('$rdx')
-            self.rax = gdb.parse_and_eval('$rax')
-            self.rbx = gdb.parse_and_eval('$rbx')
-            self.rbp = gdb.parse_and_eval('$rbp')
-            self.sp = gdb.parse_and_eval('$sp')
+
+            self.pc = get_reg('pc')
+            self.r15 = get_reg('r15')
+            self.r14 = get_reg('r14')
+            self.r13 = get_reg('r13')
+            self.r12 = get_reg('r12')
+            self.rdx = get_reg('rdx')
+            self.rax = get_reg('rax')
+            self.rbx = get_reg('rbx')
+            self.rbp = get_reg('rbp')
+            self.sp = get_reg('sp')
+
+        def get_reg(reg):
+            return gdb.parse_and_eval('$' + reg)
+
+        def set_reg(reg, value):
+            gdb.execute(
+                'set ${reg} = 0x{val:x}'.format(
+                    reg = reg, val = value & 2 ** 64 - 1
+                )
+            )
 
         def switch(self):
             prev_ctx = self
-
-            def set_reg(reg, value):
-                gdb.execute("set $%s = 0x%x" % (reg, value & 2 ** 64 - 1))
 
             set_reg('pc', self.pc)
             set_reg('r15', self.r15)
@@ -52,16 +60,16 @@ class HPXThread():
         self.thread_data = thread_data
 
         #  current_state_ = {
-        #    <boost::atomics::detail::base_atomic
-        #       <hpx::threads::detail::combined_tagged_state
-        #           <hpx::threads::thread_state_enum,
+        #    <boost::atomics::detail::base_atomic<
+        #       hpx::threads::detail::combined_tagged_state<
+        #           hpx::threads::thread_state_enum,
         #           hpx::threads::thread_state_ex_enum
         #       >, void>
         #    > = { m_storage = 360569445166350338 }, <No data fields>
         #  }, 
         #  component_id_ = 8198320, 
-        #  description_ = thread_description {{ [desc] {0x7ffff4aa0cb5 "call_startup_functions_action"} }}, 
-        #  lco_description_ = thread_description {{ [desc] {0x7ffff4918a9d "<unknown>"} }}, 
+        #  description_ = thread_description {{ [desc] {0x7ffff4aa0cb5 'call_startup_functions_action'} }}, 
+        #  lco_description_ = thread_description {{ [desc] {0x7ffff4918a9d '<unknown>'} }}, 
         #  parent_locality_id_ = 0, 
         #  parent_thread_id_ = 0x7f3090, 
         #  parent_thread_phase_ = 1, 
@@ -108,7 +116,7 @@ class HPXThread():
         self.state_ex = combined_state >> 48 & 0xff
         self.state_ex = self.state_ex.cast(current_state_ex_type)
 
-        self.size_t = gdb.lookup_type("std::size_t")
+        self.size_t = gdb.lookup_type('std::size_t')
         stack = self.m_sp.reinterpret_cast(self.size_t)
 
         self.context = HPXThread.Context()
@@ -126,7 +134,7 @@ class HPXThread():
         prev_context = self.context.switch()
         frame = gdb.newest_frame()
         function_name = frame.name()
-        p = re.compile("^hpx::util::coroutines.*$")
+        p = re.compile('^hpx::util::coroutines.*$')
 
         try:
             while p.match(function_name):
@@ -142,10 +150,14 @@ class HPXThread():
             line = frame.function().line
             filename = frame.find_sal().symtab.filename
 
-            self.pc_string = "0x%x in " % frame.pc(
-            ) + "%s at " % function_name + "%s:" % filename + "%d" % line
+            self.pc_string = '0x{pc:x} in {function} at {file_path}:{line}'.format(
+                pc = frame.pc(),
+                function = function_name,
+                file_path = filename,
+                line = line
+            )
         except:
-            self.pc_string = "0x%x in " % frame.pc() + "<unkown>"
+            self.pc_string = '0x{pc:x} in <unknown>'.format(pc = frame.pc())
 
         self.frame = frame
 
@@ -155,17 +167,28 @@ class HPXThread():
         return addr.reinterpret_cast(self.size_t.pointer()).dereference()
 
     def info(self):
-        print(" Thread 0x%x" % self.id)
+        gdb.write('  Thread 0x{addr:x}\n'.format(addr = self.id))
         if self.m_sp.reinterpret_cast(self.m_sp.dereference().type
                                       ) > self.stack_end:
-            print(" This thread has a stack overflow")
-        print("  parent thread = %s" % self.parent_id)
-        print("  description = %s" % self.description)
-        print(self.lco_description.type)
-        print(self.lco_description.address)
-        print("  lco_description = %s" % self.lco_description)
-        print("  state = %s" % self.state)
-        print("  state_ex = %s" % self.state_ex)
-        print("  pc = %s" % self.pc_string)
+            gdb.write('  This thread has a stack overflow\n')
+        gdb.write(
+            '    parent thread   = {parent}\n'
+            '    description     = {desc}\n'
+            '{desc_type}\n'
+            '{addr}\n'
+            '    lco_description = {lco}\n'
+            '    state           = {state} \n'
+            '    state_ex        = {state_ex}\n'
+            '    pc              = {pc}\n'.format(
+                parent = self.parent_id,
+                desc = self.description,
+                desc_type = self.lco_description.type,
+                addr = self.lco_description.address,
+                lco = self.lco_description,
+                state = self.state,
+                state_ex = self.state_ex,
+                pc = self.pc_string
+            )
+        )
 
 # vim: :ai:sw=4:ts=4:sts=4:et:ft=python:fo=corqj2:sm:tw=79:

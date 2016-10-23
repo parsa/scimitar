@@ -11,34 +11,47 @@
 #
 from .apply import apply
 
-_clear_all_chars_attrs = '\033[0m'
+def style(*args):
+    return '\033[{0}m'.format(';'.join(args))
+
+__clear_all_chars_attrs = '0'
+_clear_all_chars_attrs = style(__clear_all_chars_attrs)
 clear_all_chars_attrs = lambda: apply(_clear_all_chars_attrs)
 #
-_alternate_intesity_on = '\033[1m'
+__alternate_intesity_on = '1'
+_alternate_intesity_on = style(__alternate_intesity_on)
 alternate_intesity_on = lambda: apply(_alternate_intesity_on)
 #
-_alternate_intesity_off = '\033[22m'
+__alternate_intesity_off = '22'
+_alternate_intesity_off = style(__alternate_intesity_off)
 alternate_intesity_off = lambda: apply(_alternate_intesity_off)
 #
-_dim = '\033[2m'
+__dim = '2'
+_dim = style(__dim)
 dim = lambda: apply(_dim)
 #
-_underline_on = '\033[4m'
+__underline_on = '4'
+_underline_on = style(__underline_on)
 underline_on = lambda: apply(_underline_on)
 #
-_underline_off = '\033[24m'
+__underline_off = '24'
+_underline_off = style(__underline_off)
 underline_off = lambda: apply(_underline_off)
 #
-_blink_on = '\033[5m'
+__blink_on = '5'
+_blink_on = style(__blink_on)
 blink_on = lambda: apply(_blink_on)
 #
-_blink_off = '\033[25m'
+__blink_off = '25'
+_blink_off = style(__blink_off)
 blink_off = lambda: apply(_blink_off)
 #
-_inv_video_on = '\033[7m'
+__inv_video_on = '7'
+_inv_video_on = style(__inv_video_on)
 inv_video_on = lambda: apply(_inv_video_on)
 #
-_inv_video_off = '\033[27m'
+__inv_video_off = '27'
+_inv_video_off = style(__inv_video_off)
 inv_video_off = lambda: apply(_inv_video_off)
 #
 _protected_fields_off = '\033[0}'
@@ -59,55 +72,72 @@ protected_inverse = lambda: apply(_protected_inverse)
 _protected_all_attrs_off = '\033[254}'
 protected_all_attrs_off = lambda: apply(_protected_all_attrs_off)
 #
-_hidden = '\033[8m'
+__hidden = '8'
+_hidden = style(__hidden)
 hidden = lambda: apply(_hidden)
 
-_fg_black = '\033[30m'
+__fg_black = '30'
+_fg_black = style(__fg_black)
 fg_black = lambda: apply(_fg_black)
 #
-_fg_red = '\033[31m'
+__fg_red = '31'
+_fg_red = style(__fg_red)
 fg_red = lambda: apply(_fg_red)
 #
-_fg_green = '\033[32m'
+__fg_green = '32'
+_fg_green = style(__fg_green)
 fg_green = lambda: apply(_fg_green)
 #
-_fg_yellow = '\033[33m'
+__fg_yellow = '33'
+_fg_yellow = style(__fg_yellow)
 fg_yellow = lambda: apply(_fg_yellow)
 #
-_fg_blue = '\033[34m'
+__fg_blue = '34'
+_fg_blue = style(__fg_blue)
 fg_blue = lambda: apply(_fg_blue)
 #
-_fg_magenta = '\033[35m'
+__fg_magenta = '35'
+_fg_magenta = style(__fg_magenta)
 fg_magenta = lambda: apply(_fg_magenta)
 #
-_fg_cyan = '\033[36m'
+__fg_cyan = '36'
+_fg_cyan = style(__fg_cyan)
 fg_cyan = lambda: apply(_fg_cyan)
 #
-_fg_white = '\033[37m'
+__fg_white = '37'
+_fg_white = style(__fg_white)
 fg_white = lambda: apply(_fg_white)
 
-_bg_black = '\033[40m'
+__bg_black = '40'
+_bg_black = style(__bg_black)
 bg_black = lambda: apply(_bg_black)
 #
-_bg_red = '\033[41m'
+__bg_red = '41'
+_bg_red = style(__bg_red)
 bg_red = lambda: apply(_bg_red)
 #
-_bg_green = '\033[42m'
+__bg_green = '42'
+_bg_green = style(__bg_green)
 bg_green = lambda: apply(_bg_green)
 #
-_bg_yellow = '\033[43m'
+__bg_yellow = '43'
+_bg_yellow = style(__bg_yellow)
 bg_yellow = lambda: apply(_bg_yellow)
 #
-_bg_blue = '\033[44m'
+__bg_blue = '44'
+_bg_blue = style(__bg_blue)
 bg_blue = lambda: apply(_bg_blue)
 #
-_bg_magenta = '\033[45m'
+__bg_magenta = '45'
+_bg_magenta = style(__bg_magenta)
 bg_magenta = lambda: apply(_bg_magenta)
 #
-_bg_cyan = '\033[46m'
+__bg_cyan = '46'
+_bg_cyan = style(__bg_cyan)
 bg_cyan = lambda: apply(_bg_cyan)
 #
-_bg_white = '\033[47m'
+__bg_white = '47'
+_bg_white = style(__bg_white)
 bg_white = lambda: apply(_bg_white)
 
 # vim: :ai:sw=4:ts=4:sts=4:et:ft=python:fo=corqj2:sm:tw=79:
