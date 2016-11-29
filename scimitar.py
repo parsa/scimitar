@@ -15,8 +15,12 @@ from sys import stdout
 import time
 import thread
 import threading
-from util import config, vt100, print_out, print_ahead, print_error, raw_input_async, repr_str
-import session
+
+from util import vt100, print_out, print_ahead, print_error, raw_input_async, repr_str, cleanup_terminal, init_terminal, register_completer
+from __ver__ import VERSION
+from sessions import modes, offline_session, debug_session
+import config
+import errors
 
 # Constants
 BANNER = '''
@@ -27,7 +31,7 @@ BANNER = '''
    ___) | (__| | | | | | | | || (_| | |                       .7?IDD8Z+.        
   |____/ \___|_|_| |_| |_|_|\__\__,_|_|   (alpha)            .$?I+=$=.          
                                                           .?77$=+..?.           
-            0.3.193 build 3109                          .III77777,.:I.          
+            {get_version_result}                        .III77777,.:I.          
                                                      .~?????I,?.    .~.         
                                                   ..?++++?=?+.                  
                                                 .?+++++I 7:                     
@@ -48,7 +52,7 @@ Be licensed under Boost Software License, Version 1.0
 <http://www.boost.org/LICENSE_1_0.txt>
 'tis be free software; ye be free to change 'n redistribute it. Thar be NO
 warranty; not even for MERCHANTABILITY or FITNESS FER A PARTICULAR PURPOSE.
-'''
+'''.format(get_version_result = VERSION.rjust(20))
 
 
 # HACK: Test async output printing
@@ -63,86 +67,107 @@ def noise():
 # Dispatch the command and its arguments to the appropriate mode's processor
 
 
+completer_switcher = {
+    modes.offline: offline_session.OfflineSessionCommandCompleter().complete,
+    modes.debugging: debug_session.DebugSessionCommandCompleter().complete,
+    modes.quit: None,
+}
+
 command_handler_switcher = {
-    session.modes.offline: session.offline.process,
-    session.modes.debugging: session.debugging.process,
+    modes.offline: offline_session.process,
+    modes.debugging: debug_session.process,
 }
 
 
 def main():
-    # Clear the terminal
-    vt100.terminal.reset()
-    # Ahoy
-    print_out(BANNER)
+    try:
+        # NOTE: Multiple SIGKILLs required to force close.
+        raw_input_async.last_kill_sig = None
 
-    # Initial session mode
-    state = session.modes.offline
+        # Clear the terminal
+        vt100.terminal.reset()
 
-    # Async output printing
-    thread.start_new_thread(noise, ())
+        # Ahoy
+        print_out(BANNER)
 
-    # Main loop
-    while state != session.modes.quit:
-        vt100.unlock_keyboard()
-        # FIXME: raw_input_async still is a blocking call. Have found no way to
-        # avoid it. Reason: readline initiates a system call that I have no
-        # clue to get out of.
-        user_input, key_seq = raw_input_async(config.settings['ui']['prompt'])
-        # HACK: Temporarily disabled for debugging
-        #vt100.lock_keyboard()
-        ## HACK: Display the user's input
-        #print_out(user_input.encode('string_escape') if user_input else '')
+        # Initial session mode
+        current_mode = modes.offline
 
-        # An empty string is a valid empty
-        # If the input was a control signal split might just remove it
-        packed_input = user_input if user_input else key_seq
-        cmd, args = packed_input[0], packed_input[1:]
-        # Run the appropriate mode's processing function
-        cmd_processor_fn = command_handler_switcher.get(state)
+        # Init terminal
+        init_terminal()
+        register_completer(completer_switcher[current_mode])
 
-        try:
-            state, update_msg = cmd_processor_fn(cmd, args)
-            if update_msg:
-                print_out(update_msg)
-        except session.UnknownCommandError as e:
-            print_error(
-                'Unknown command: {u1}{cmd}{u0}', cmd = repr_str(e.expression)
-            )
-        except session.BadArgsError as e:
-            print_error(
-                'Command "{u1}{cmd}{u0}" cannot be initiated with the arguments provided.\n{msg}',
-                cmd = e.expression,
-                msg = e.message
-            )
-        except session.BadConfigError as e:
-            print_error(
-                'The command encountered errors with the provided arguments.\n{u1}{cmd}{u0}: {msg}.',
-                cmd = e.expression,
-                msg = e.message
-            )
-        except session.CommandFailedError as e:
-            print_error(
-                'The command encountered an error and did not run properly.\n{u1}{cmd}{u0}: {msg}.',
-                cmd = e.expression,
-                msg = e.message
-            )
-        except session.CommandImplementationIncompleteError:
-            print_error(
-                'The implementation of command "{u1}{cmd}{u0}" is not complete yet.',
-                cmd = cmd
-            )
-        except KeyboardInterrupt:
-            print_error('Action cancelled by the user.')
+        # Async output printing
+        thread.start_new_thread(noise, ())
+
+        prompts_list = config.settings['ui']['prompts']
+        get_prompt = lambda: {
+            modes.offline: prompts_list[0],
+            modes.debugging: prompts_list[1]
+        }[current_mode]
+
+        # Main loop
+        while current_mode != modes.quit:
+            vt100.unlock_keyboard()
+            # FIXME: raw_input_async still is a blocking call. Have found no way to
+            # avoid it. Reason: readline initiates a system call that I have no
+            # clue to get out of.
+            user_input, key_seq = raw_input_async(get_prompt())
+            # HACK: Temporarily disabled for debugging
+            #vt100.lock_keyboard()
+            ## HACK: Display the user's input
+            #print_out(user_input.encode('string_escape') if user_input else '')
+
+            # An empty string is a valid empty
+            # If the input was a control signal split might just remove it
+            packed_input = user_input if user_input else key_seq
+            if not packed_input:
+                continue
+            cmd, args = packed_input[0], packed_input[1:]
+            # Run the appropriate mode's processing function
+            cmd_processor_fn = command_handler_switcher.get(current_mode)
+
+            try:
+                current_mode, update_msg = cmd_processor_fn(cmd, args)
+                register_completer(completer_switcher[current_mode])
+
+                if update_msg:
+                    print_out(update_msg)
+            except errors.UnknownCommandError as e:
+                print_error(
+                    'Unknown command: {u1}{cmd}{u0}',
+                    cmd = repr_str(e.expression)
+                )
+            except errors.BadArgsError as e:
+                print_error(
+                    'Command "{u1}{cmd}{u0}" cannot be initiated with the arguments provided.\n{msg}',
+                    cmd = e.expression,
+                    msg = e.message
+                )
+            except errors.BadConfigError as e:
+                print_error(
+                    'The command encountered errors with the provided arguments.\n{u1}{cmd}{u0}: {msg}',
+                    cmd = e.expression,
+                    msg = e.message
+                )
+            except errors.CommandFailedError as e:
+                print_error(
+                    'The command encountered an error and did not run properly.\n{u1}{cmd}{u0}: {msg}',
+                    cmd = e.expression,
+                    msg = e.message
+                )
+            except errors.CommandImplementationIncompleteError:
+                print_error(
+                    'The implementation of command "{u1}{cmd}{u0}" is not complete yet.',
+                    cmd = cmd
+                )
+            except KeyboardInterrupt:
+                print_error('Action cancelled by the user.')
+    finally:
+        cleanup_terminal()
 
 
 if __name__ == '__main__':
-    # NOTE: Multiple SIGKILLs required to force close.
-    raw_input_async.last_kill_sig = None
-    try:
-        main()
-    finally:
-        # Clean up the terminal before letting go
-        vt100.unlock_keyboard()
-        vt100.format.clear_all_chars_attrs()
+    main()
 
 # vim: :ai:sw=4:ts=4:sts=4:et:ft=python:fo=corqj2:sm:tw=79:

@@ -9,7 +9,10 @@
 # Distributed under the Boost Software License, Version 1.0. (See accompanying
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 #
-from util.exceptions import *
+
+
+class ScimitarError(Exception):
+    pass
 
 
 class UnknownCommandError(ScimitarError):
@@ -54,13 +57,18 @@ class UnexpectedResponseError(ScimitarError):
     pass
 
 
-class NoRunningAppFoundError(ScimitarError):
-    '''Raised when no running application is found on the system'''
+class CommandImplementationIncompleteError(ScimitarError):
+    '''Raised when a command I had to remove is called.'''
     pass
 
 
-class CommandImplementationIncompleteError(ScimitarError):
-    '''Raised when a command I had to remove is called.'''
+class DeadConsoleError(ScimitarError):
+    '''Raised when encountering an unexpected response during terminal sessions.'''
+    pass
+
+
+class ConsoleSessionError(ScimitarError):
+    '''Raised when encountering an unexpected response during terminal sessions.'''
     pass
 
 # vim: :ai:sw=4:ts=4:sts=4:et:ft=python:fo=corqj2:sm:tw=79:
